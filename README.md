@@ -8,4 +8,4 @@ The full openAlex database is ~300GB and so hosting the entire database is not a
 
 # functions
 
-referenceBuild currently does two main tasks: (1) search and identify IDs for venues (e.g., journals) and concept tags in openAlex; (2) query works associated with venues or concepts in openAlex and return a json database 
+referenceBuild currently does two main tasks: (1) search and identify IDs for venues (e.g., journals) and concept tags in openAlex; (2) query works associated with venues or concepts in openAlex and return a json database. Right now, these tasks are split across venues and concepts, e.g., there are separate extractVenues() and extractConcepts() functions. 
