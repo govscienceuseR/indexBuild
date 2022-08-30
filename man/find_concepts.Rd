@@ -4,17 +4,24 @@
 \alias{find_concepts}
 \title{Find concepts and ids for use in openAlex}
 \usage{
-find_concepts(query_string, which_column = "normalized_name", maxlevel = Inf)
+find_concepts(
+  query_string = NULL,
+  maxlevel = 10,
+  per_page = 10,
+  mailto = NULL,
+  max_return = 100,
+  vs = c("id", "display_name", "level", "works_count", "works_api_url", "description")
+)
 }
 \arguments{
 \item{query_string}{string or regular expression for searching concept descriptions}
 }
 \value{
-dataframe of results
+datatable of results
 }
 \description{
 Search spreadsheet of openAlex concept tree (see https://docs.openalex.org/about-the-data/concept). Current google sheet url is: https://docs.google.com/spreadsheets/d/1LBFHjPt4rj_9r0t0TTAlT68NwOtNH8Z21lBMsJDMoZg/edit#gid=1473310811
 }
 \details{
-NOTE: this function uses the Aug 2022 concept sheet
+NOTE: note that https://api.openalex.org/concepts doesn't seem to tolerate regex at this point, so that needs to be done with the output
 }
