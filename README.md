@@ -19,12 +19,12 @@ queryVenues(venue_string = 'Journal of Public Administration Research and Theory
 and get information about a concept, you can feed in a concept. 
 
 ```
-queryVenues(venue_string = 'Journal of Public Administration Research and Theory')
+queryConcepts(concept_string = 'public administration')
 ```
 Both functions use basic string search, and the openAlex API stems by default. The results of the function are somewhat different, because we assume that the user knows what venue they are interested in ahead of time, whereas concept search is likely to be more iterative. Thus, queryConcepts returns a data.table of potential concept matches for the user to check out. 
 
 Once you have a concept or venue of interest, you can use the extractVenues() or extractConcepts() functions to query openAlex and return a set of "works" (an entity in the openAlex database that roughly corresponds to a publication, but groups cases where the same basic product is stored in both a journal and SSRN.). The extractXXX() functions also contain numerous options for filtering (e.g., by date) and controlling outputs (e.g., to reduce file size). The following example returns all JPART publications between 2015 and 2020, excluding paratext works (e.g., journal issue introductions, etc.)
 
 ```
-extractConcepts(concept_page = "https://openalex.org/V169433491",from_date = 2015,to_date = 2020,keep_paratext = F)
+extractVenues(concept_page = "https://openalex.org/V169433491",from_date = 2015,to_date = 2020,keep_paratext = F)
 ```
