@@ -1,4 +1,4 @@
-#' Find concepts and ids for use in openAlex
+#' Find concepts and concept ids for use in openAlex
 #'
 #' @param query_string string or regular expression for searching concept descriptions
 #' @description Search spreadsheet of openAlex concept tree (see https://docs.openalex.org/about-the-data/concept). Current google sheet url is: https://docs.google.com/spreadsheets/d/1LBFHjPt4rj_9r0t0TTAlT68NwOtNH8Z21lBMsJDMoZg/edit#gid=1473310811

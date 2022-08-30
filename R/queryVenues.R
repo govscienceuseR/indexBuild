@@ -1,4 +1,4 @@
-#' Query openAlex for information about a venue (i.e., journal)
+#' Find venues (journals) and venue ids for use in openAlex
 #'
 #' @param venue a string venue name https://docs.openalex.org/api
 #' @param mailto email address of user, needed to get in 'polite pool' of API

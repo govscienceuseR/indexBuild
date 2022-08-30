@@ -2,7 +2,7 @@
 % Please edit documentation in R/queryVenues.R
 \name{queryVenues}
 \alias{queryVenues}
-\title{Query openAlex for information about a venue (i.e., journal)}
+\title{Find venues (journals) and venue ids for use in openAlex}
 \usage{
 queryVenues(mailto = NULL, venue_string = NULL)
 }
