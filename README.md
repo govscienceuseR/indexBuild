@@ -8,4 +8,23 @@ The full openAlex database is ~300GB and so hosting the entire database is not a
 
 # functions
 
-referenceBuild currently does two main tasks: (1) search and identify IDs for venues (e.g., journals) and concept tags in openAlex; (2) query works associated with venues or concepts in openAlex and return a json database. Right now, these tasks are split across venues and concepts, e.g., there are separate extractVenues() and extractConcepts() functions. 
+referenceBuild currently does three main tasks: (1) search and identify IDs for venues (e.g., journals) and concept tags in openAlex; (2) query works associated with venues or concepts in openAlex and return a json database; (3) turn json file trees for openAlex works into a row-wise data.table object with a simple subset of metadata. Right now, the first two tasks are split across venues and concepts, e.g., there are separate extractVenues() and extractConcepts() functions. At some point, these can be combined.
+
+# example
+To get information about a journal, you can feed in a journal title:
+```
+queryVenues(venue_string = 'Journal of Public Administration Research and Theory')
+```
+
+and get information about a concept, you can feed in a concept. 
+
+```
+queryVenues(venue_string = 'Journal of Public Administration Research and Theory')
+```
+Both functions use basic string search, and the openAlex API stems by default. The results of the function are somewhat different, because we assume that the user knows what venue they are interested in ahead of time, whereas concept search is likely to be more iterative. Thus, queryConcepts returns a data.table of potential concept matches for the user to check out. 
+
+Once you have a concept or venue of interest, you can use the extractVenues() or extractConcepts() functions to query openAlex and return a set of "works" (an entity in the openAlex database that roughly corresponds to a publication, but groups cases where the same basic product is stored in both a journal and SSRN.). The extractXXX() functions also contain numerous options for filtering (e.g., by date) and controlling outputs (e.g., to reduce file size). The following example returns all JPART publications between 2015 and 2020, excluding paratext works (e.g., journal issue introductions, etc.)
+
+```
+extractConcepts(concept_page = "https://openalex.org/V169433491",from_date = 2015,to_date = 2020,keep_paratext = F)
+```
