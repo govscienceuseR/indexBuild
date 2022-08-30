@@ -1,10 +1,10 @@
-#' Extract works associated with a venue in openAlex
+#' Extract works associated with a concept in openAlex
 #'
 #' @param mailto email address of user, needed to get in 'polite pool' of API
-#' @param venue_id a venue id string (https://docs.openalex.org/api)
+#' @param concept_id a concept id string (https://docs.openalex.org/api)
 #' @param debug boolean, if TRUE returns query url, if FALSE actually does query
-#' @param venue_page string for openAlex venue page url
-#' @param venue_id string for openAlex venue ID
+#' @param concept_page string for openAlex concept page url
+#' @param concept_id string for openAlex concept ID
 #' @param cursor boolean if TRUE will perform cursor pagination needed for iterating
 #' @param from_date earliest publication date, in YYYY-MM-DD format a YEAR (assumes YEAR/01/01)
 #' @param to_date latest publication date, in YYYY-MM-DD format or a YEAR (assumes YEAR/12/31)
@@ -13,21 +13,21 @@
 #' @param sleep_time time to Sys.sleep() in between cursor iterations
 #' @param file location to save output as a json.gz
 #' @param reduce boolean for whether to reduce scope of final results, see @details
-#' @description Primary use is to query a venue ID and extract associated works, e.g., all article records from a given journal
+#' @description Primary use is to query a concept ID and extract associated works, e.g., all article records associated with "habitat"
 #' @details Note that because extracted records can be pretty large, there is an optional "reduce" command that selects out a subset of key variables before saving or returning the final json list
 #' @export
 #' @import jsonlite
 #' @import stringr
 
-extractVenues <- function(mailto = NULL,venue_id = NULL,venue_page = NULL,cursor = T,per_page = NULL,to_date = NULL,from_date = NULL,keep_paratext = FALSE,debug = FALSE,sleep_time = 0.1,file = NULL,reduce = FALSE){
-  if(missing(venue_id)&missing(venue_page)){stop("Must specify a venue_id string or the https page for a venue")}
+extractConcepts <- function(mailto = NULL,concept_id = NULL,concept_page = NULL,cursor = T,per_page = NULL,to_date = NULL,from_date = NULL,keep_paratext = FALSE,debug = FALSE,sleep_time = 0.1){
+  if(missing(concept_id)&missing(concept_page)){stop("Must specify a concept_id string or the https page for a concept")}
   works_base <- 'https://api.openalex.org/works'
   url <- parse_url(works_base)
   if(!is.null(mailto)){url$query$mailto<-mailto}
   if(cursor){url$query$cursor<-"*"}
   if(!is.null(per_page)){url$query$`per-page`<-per_page}
-  if(missing(venue_id)){url$query$filter$host_venue.id<-stringr::str_extract(venue_page,'[A-Za-z0-9]+$')}
-  if(!missing(venue_id)){url$query$filter$host_venue.id<-venue_id}
+  if(missing(concept_id)){url$query$filter$concept.id<-stringr::str_extract(concept_page,'[A-Za-z0-9]+$')}
+  if(!missing(concept_id)){url$query$filter$concept.id<-concept_id}
   if(!missing(from_date)){
     from_date <- if(nchar(from_date)==4){paste(from_date,'01','01',sep = '-')}
     url$query$filter$from_publication_date<-from_date}

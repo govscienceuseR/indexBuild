@@ -10,7 +10,7 @@
 #' @export
 #' @details NOTE: note that https://api.openalex.org/concepts doesn't seem to tolerate regex at this point, so that needs to be done with the output
 
-find_concepts <- function(query_string = NULL,maxlevel = 10,per_page = 10,mailto = NULL,max_return = 100,vs = c('id','display_name','level','works_count','works_api_url','description')){
+queryConcepts <- function(query_string = NULL,maxlevel = 10,per_page = 10,mailto = NULL,max_return = 100,vs = c('id','display_name','level','works_count','works_api_url','description')){
   purl <- parse_url('https://api.openalex.org/concepts?')
   if(!is.null(mailto)){purl$query$mailto<-mailto}
   if(!is.null(query_string)){purl$query$filter<-paste0('display_name.search:',query_string)}
