@@ -15,6 +15,8 @@ works2dt <- function(works_list){
   dt$cited_by_count <- sapply(works_list,'[[','cited_by_count')
   dt$authorships <- lapply(works_list,'[[','authorships')
   dt$authors <- flattenAuthorNames(dt$authorships)
+  dt$author_institutions <- flattenAuthorInsitutions(dt$authorships,'display_name')
+  dt$author_institutions_ror <- flattenAuthorInsitutions(dt$authorships,'ror')
   dt[,authorships:=NULL]
   dt$journal_title <- sapply(dt$host_venue,"[[",'display_name')
   dt$publisher <- sapply(dt$host_venue,"[[",'publisher')
