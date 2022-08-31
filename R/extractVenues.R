@@ -59,11 +59,11 @@ extractVenues <- function(mailto = NULL,venue_id = NULL,venue_page = NULL,cursor
   if(reduce){
     temp_js_list <- lapply(temp_js_list, function(x) x[c('id','title','doi','host_venue','cited_by_count','is_paratext','open_access','publication_year','authorships','type')])
   }
+  json_object <- toJSON(temp_js_list)
   if(!is.null(file)){
     print(paste('saving result to',file))
-    json_object <- toJSON(temp_js_list)
     write(json_object, file=gzfile(file))
   }
-  return(temp_js_list)
+  return(json_object)
   }
 }

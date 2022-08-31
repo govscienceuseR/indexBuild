@@ -18,7 +18,7 @@ flattenAuthorNames <- function(authors_json){
 #' @param authors_json a list in json structure that contains openAlex works
 #' @return a vector of strings, 1 string for each work, of author names pasted together separated by ";"
 #' @export
-flattenAuthorInsitutions <- function(authors_json,institutional_var = NULL){
+flattenAuthorInstitutions <- function(authors_json,institutional_var = NULL){
   if(missing(institutional_var)){stop("must specify insitutional variable like 'ror' or 'display name'")}
   sapply(sapply(lapply(lapply(authors_json,'[[','author'),'[[','institutions'),'[[',institutional_var),paste,collapse=';')
 }
