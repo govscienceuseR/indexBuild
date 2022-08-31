@@ -5,7 +5,7 @@
 \title{Find concepts and concept ids for use in openAlex}
 \usage{
 queryConcepts(
-  query_string = NULL,
+  concept_string = NULL,
   maxlevel = 10,
   per_page = 10,
   mailto = NULL,
@@ -14,7 +14,7 @@ queryConcepts(
 )
 }
 \arguments{
-\item{query_string}{string or regular expression for searching concept descriptions}
+\item{concept_string}{string or regular expression for searching concept descriptions}
 }
 \value{
 datatable of results

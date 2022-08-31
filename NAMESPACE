@@ -2,6 +2,7 @@
 
 export(extractConcepts)
 export(extractVenues)
+export(flattenAuthorInsitutions)
 export(flattenAuthorNames)
 export(queryConcepts)
 export(queryVenues)

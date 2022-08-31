@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{flattenAuthorNames}
 \alias{flattenAuthorNames}
-\title{openAlex provides A LOT of author info stored in json. this goes into the nexted structure and pulls out just the author names}
+\title{openAlex provides A LOT of author info stored in json. this goes into the nested structure and pulls out just the author names}
 \usage{
 flattenAuthorNames(authors_json)
 }
@@ -13,5 +13,5 @@ flattenAuthorNames(authors_json)
 a vector of strings, 1 string for each work, of author names pasted together separated by ";"
 }
 \description{
-openAlex provides A LOT of author info stored in json. this goes into the nexted structure and pulls out just the author names
+openAlex provides A LOT of author info stored in json. this goes into the nested structure and pulls out just the author names
 }
