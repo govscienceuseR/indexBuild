@@ -4,7 +4,7 @@
 \alias{queryVenues}
 \title{Find venues (journals) and venue ids for use in openAlex}
 \usage{
-queryVenues(mailto = NULL, venue_string = NULL)
+queryVenues(venue_string = NULL, mailto = NULL)
 }
 \arguments{
 \item{mailto}{email address of user, needed to get in 'polite pool' of API}

@@ -6,12 +6,12 @@
 #' @export
 #' @import jsonlite
 #' @import stringr
-
-queryVenues <- function(mailto = NULL,venue_string = NULL){
+#' @import httr
+queryVenues <- function(venue_string = NULL,mailto = NULL){
   venue_base <- 'https://api.openalex.org/venues'
   url <- parse_url(venue_base)
   if(!is.null(mailto)){url$query$mailto<-mailto}
   if(!is.null(venue_string)){url$query$filter<-paste0('display_name.search:',venue_string)}
   qurl <- build_url(url)
-  return(read_json(qurl))
+  return(jsonlite::read_json(qurl))
 }

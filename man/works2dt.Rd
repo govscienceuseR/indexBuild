@@ -4,10 +4,10 @@
 \alias{works2dt}
 \title{takes a json formatted list of works associated with a host venue and outputs a data.table of simple citation information}
 \usage{
-works2dt(works_list)
+works2dt(json_result)
 }
 \arguments{
-\item{works_list}{a list output by calling extractVenues.R or extractConcepts.R}
+\item{json_result}{a list output by calling extractVenues.R or extractConcepts.R}
 }
 \value{
 a data.table object with one work per row
