@@ -14,6 +14,7 @@
 #' @param dest_file location to save output as a json.gz
 #' @param return boolean for whether final result should be returned as workspace object
 #' @param reduce boolean for whether to reduce scope of final results, see @details
+#' @param override override 1M query result limit?
 #' @description Primary use is to query a concept ID and extract associated works, e.g., all article records associated with "habitat"
 #' @details Note that because extracted records can be pretty large, there is an optional "reduce" command that selects out a subset of key variables before saving or returning the final json list
 #' @export
@@ -21,7 +22,7 @@
 #' @import httr
 #' @import stringr
 
-extractWorks <- function(dest_file = NULL,mailto = NULL,concept_id = NULL,concept_page = NULL,venue_id = NULL,venue_page = NULL,cursor = T,per_page = NULL,to_date = NULL,from_date = NULL,keep_paratext = FALSE,debug = FALSE,sleep_time = 0.1,reduce = T,return = T){
+extractWorks <- function(dest_file = NULL,override = F,mailto = NULL,concept_id = NULL,concept_page = NULL,venue_id = NULL,venue_page = NULL,cursor = T,per_page = NULL,to_date = NULL,from_date = NULL,keep_paratext = FALSE,debug = FALSE,sleep_time = 0.1,reduce = T,return = T){
   if(missing(concept_id)&!missing(concept_page)){concept_id <- stringr::str_extract(concept_page,'[A-Za-z0-9]+$')}
   if(missing(venue_id)&!missing(venue_page)){venue_id <- stringr::str_extract(venue_page,'[A-Za-z0-9]+$')}
   if(missing(venue_id)&missing(concept_id)){stop("Must specify a concept and/or a venue to query (using page or id)")}
@@ -65,7 +66,7 @@ extractWorks <- function(dest_file = NULL,mailto = NULL,concept_id = NULL,concep
     print(paste('querying page',p))
     js <- jsonlite::read_json(qurl)
     if(p==1){
-      if(js$meta$count>1e6){
+      if(js$meta$count>1e6&!override){
         stop('more than 1M works returned, make a finer query')
       }
       else{print(paste0(js$meta$count,' works found'))}

@@ -6,6 +6,7 @@
 \usage{
 extractWorks(
   dest_file = NULL,
+  override = F,
   mailto = NULL,
   concept_id = NULL,
   concept_page = NULL,
@@ -24,6 +25,8 @@ extractWorks(
 }
 \arguments{
 \item{dest_file}{location to save output as a json.gz}
+
+\item{override}{override 1M query result limit?}
 
 \item{mailto}{email address of user, needed to get in 'polite pool' of API}
 

@@ -13,7 +13,7 @@ streamGZ <- function(x){stream_in(gzfile(x))}
 
 
 list2vector <- function(list,var,fill = NA){
-  return(sapply(list[[var]],function(x) ifelse(is.null(x),fill,x)))
+  return(unlist(lapply(list[[var]],function(x) ifelse(length(x)==0,fill,x))))
 }
 
 #'this is just a shorthand to go into lists within lists and grab items

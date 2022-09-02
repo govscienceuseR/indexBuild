@@ -23,7 +23,7 @@ works2dt <- function(json_result){
   sapply(json_result$authorships,function(x) paste(unlist(x[['author']][[v]]),collapse = ';'))
   })
   author_results_dt <- (as.data.table(author_results))
-  names(author_results_dt) <- author_items
+  names(author_results_dt) <- paste0('author.',author_items)
   dt <- cbind(dt,author_results_dt)
   dt$is_oa <- unlist(json_result$open_access$is_oa)
   dt$oa_status <- unlist(json_result$open_access$oa_status)
