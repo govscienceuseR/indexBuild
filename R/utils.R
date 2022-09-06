@@ -3,6 +3,7 @@
 #'This function just combines two existing functions. Stream_in is preferred over normal read functions because the files are very large.
 #' @param x a json.gz file
 #' @return a decompressed json file
+#' @import jsonlite
 #' @export
 streamGZ <- function(x){stream_in(gzfile(x))}
 

@@ -9,12 +9,15 @@ works2dt <- function(json_result){
   if(class(json_result)=='character'){json_result <- streamGZ(json_result)}
   if(!class(json_result)%in%c('data.table','data.frame')){stop('expected a data.frame or a data.table, did not get it')}
   dt <- data.table()
-  single_vars <- c('id','doi','type','publication_date','cited_by_count')
+  single_vars <- c('id','title','doi','type','publication_year','cited_by_count')
   for(v in single_vars){
     dt[,(v):=list2vector(json_result,v,fill = NA)]
   }
   host_items <- c('id','display_name','issn_l','publisher')
-  host_results <- json_result$host_venue[,host_items]
+  host_results <- data.table(json_result$host_venue[,host_items])
+  for(h in host_items){
+    host_results[,(h):=list2vector(host_results,h,fill = NA)]
+    }
   names(host_results) <- paste0('host.',names(host_results))
   dt <- cbind(dt,host_results)
 
@@ -25,7 +28,12 @@ works2dt <- function(json_result){
   author_results_dt <- (as.data.table(author_results))
   names(author_results_dt) <- paste0('author.',author_items)
   dt <- cbind(dt,author_results_dt)
-  dt$is_oa <- unlist(json_result$open_access$is_oa)
-  dt$oa_status <- unlist(json_result$open_access$oa_status)
-  return(dt)
+
+  oa <- json_result$open_access
+  oa$oa_status[sapply(oa$oa_status,length)==0] <- NA
+  oa$is_oa[sapply(oa$is_oa,length)==0] <- NA
+  dt$is_oa <- unlist(oa$is_oa)
+  dt$oa_status <- unlist(oa$oa_status)
+
+   return(dt)
 }
