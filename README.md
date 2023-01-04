@@ -1,14 +1,14 @@
-# referenceBuild
+# indexBuild
 
-The citationSearch (https://github.com/govscienceuseR/citationSearch) tool from govscienceuseR needs two basic inputs: (1) a set of extracted references from source documents; and (2) a set of canonical citations against which the extracted references can be searched. The user can customize this source set. 
+The referenceSearch (https://github.com/govscienceuseR/citationSearch) tool from govscienceuseR needs two basic inputs: (1) a set of extracted references from source documents; and (2) a set of canonical citations against which the extracted references can be searched. The user can customize this source set. 
 
-The referenceBuild package provides a way to automate a tailored reference set by querying and compiling bibliographic records from the open-source academic information liberary openAlex.org. 
+The indexBuild package provides a way to automate a tailored reference set by querying and compiling bibliographic records from the open-source academic information liberary openAlex.org. 
 
-The full openAlex database is ~300GB and so hosting the entire database is not a good time. referenceBuild provides options for downloaded a customized subset filtered by attributes such as concept area, date, and citation count. This package is inspired by the openalexR package (https://cran.r-project.org/web/packages/openalexR/index.html) but serves a slightly different purpose: whereas openalexR works well for targeted queries (sort of like using Google Scholar), referenceBuild is designed to produce a custom reference library.
+The full openAlex database is ~300GB and so hosting the entire database is not a good time. indexBuild provides options for downloaded a customized subset filtered by attributes such as concept area, date, and citation count. This package is inspired by the openalexR package (https://cran.r-project.org/web/packages/openalexR/index.html) but serves a slightly different purpose: whereas openalexR works well for targeted queries (sort of like using Google Scholar), indexeBuild is designed to produce a custom reference library.
 
 # functions
 
-referenceBuild currently does three main tasks: (1) search and identify IDs for venues (e.g., journals) and concept tags in openAlex; (2) query works associated with venues or concepts in openAlex and return a json database; (3) turn json file trees for openAlex works into a row-wise data.table object with a simple subset of metadata. Right now, the first two tasks are split across venues and concepts, e.g., there are separate extractVenues() and extractConcepts() functions. At some point, these can be combined.
+indexBuild currently does three main tasks: (1) search and identify IDs for venues (e.g., journals) and concept tags in openAlex; (2) query works associated with venues or concepts in openAlex and return a json database; (3) turn json file trees for openAlex works into a row-wise data.table object with a simple subset of metadata. Right now, the first two tasks are split across venues and concepts, e.g., there are separate extractVenues() and extractConcepts() functions. At some point, these can be combined.
 
 # example
 To get information about a journal, you can feed in a journal title:
