@@ -2,12 +2,13 @@
 #' @description takes a json formatted list of works associated with a host venue and outputs a data.table of simple citation information
 #' @param json_result a list output by calling extractVenues.R or extractConcepts.R
 #' @return a data.table object with one work per row
-#' @import data.table
 #' @export
+#' @importFrom methods is
+#' @import data.table
 
 works2dt <- function(json_result){
-  if(class(json_result)=='character'){json_result <- streamGZ(json_result)}
-  if(!class(json_result)%in%c('data.table','data.frame')){stop('expected a data.frame or a data.table, did not get it')}
+  if(is(json_result,'character')){json_result <- streamGZ(json_result)}
+  if(!is(json_result,'data.table')){stop('expected a data.frame or a data.table, did not get it')}
   dt <- data.table()
   single_vars <- c('id','title','doi','type','publication_year','cited_by_count')
   for(v in single_vars){

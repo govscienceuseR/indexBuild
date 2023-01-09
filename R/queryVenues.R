@@ -7,6 +7,7 @@
 #' @import jsonlite
 #' @import stringr
 #' @import httr
+
 queryVenues <- function(venue_string = NULL,mailto = NULL){
   venue_base <- 'https://api.openalex.org/venues'
   url <- parse_url(venue_base)

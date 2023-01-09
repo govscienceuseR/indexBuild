@@ -1,13 +1,14 @@
 #' simple wrapper to combine stream_in and gzfile to read json.gz OA files
 #'
-#'This function just combines two existing functions. Stream_in is preferred over normal read functions because the files are very large.
+#' This function just combines two existing functions. Stream_in is preferred over normal read functions because the files are very large.
 #' @param x a json.gz file
 #' @return a decompressed json file
-#' @import jsonlite
 #' @export
+#' @import jsonlite
+
 streamGZ <- function(x){stream_in(gzfile(x))}
 
-#'this is just a shorthand to go grab single entry items from json result lists
+#' this is just a shorthand to go grab single entry items from json result lists
 #' @param list a list of json openAlex results
 #' @param var the variable name to grab from each list entry
 #' @param fill replaces empty values with NA before collapsing to vector
@@ -17,7 +18,7 @@ list2vector <- function(list,var,fill = NA){
   return(unlist(lapply(list[[var]],function(x) ifelse(length(x)==0,fill,x))))
 }
 
-#'this is just a shorthand to go into lists within lists and grab items
+#' this is just a shorthand to go into lists within lists and grab items
 #' @param list a list of json openAlex results
 #' @param sublist the name of the 2nd level list
 #' @param var the name of the variable to pull out from the 2nd level list

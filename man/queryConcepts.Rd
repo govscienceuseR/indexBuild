@@ -15,6 +15,16 @@ queryConcepts(
 }
 \arguments{
 \item{concept_string}{string or regular expression for searching concept descriptions}
+
+\item{maxlevel}{most detailed level of concept tree to return (lower is more general, higher is more specific)}
+
+\item{per_page}{how many results to return per query page}
+
+\item{mailto}{email address to allow priority query}
+
+\item{max_return}{maximum number of concepts to return}
+
+\item{variables}{to return in data.table}
 }
 \value{
 datatable of results
