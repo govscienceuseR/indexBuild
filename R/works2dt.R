@@ -7,7 +7,8 @@
 #' @import data.table
 
 works2dt <- function(json_result){
-  if(is(json_result,'character')){json_result <- streamGZ(json_result)}
+  if(is(json_result,'character')){json_result <- streamGZ(json_result)
+  json_result <- data.table(json_result)}
   if(!is(json_result,'data.table')){stop('expected a data.frame or a data.table, did not get it')}
   dt <- data.table()
   single_vars <- c('id','title','doi','type','publication_year','cited_by_count')
