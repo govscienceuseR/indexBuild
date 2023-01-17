@@ -4,10 +4,12 @@
 \alias{queryVenues}
 \title{Find venues (journals) and venue ids for use in openAlex}
 \usage{
-queryVenues(venue_string = NULL, mailto = NULL)
+queryVenues(venue_string = NULL, mailto = NULL, type = NULL)
 }
 \arguments{
 \item{mailto}{email address of user, needed to get in 'polite pool' of API}
+
+\item{type}{which type of venue should be included in query, defaults to all}
 
 \item{venue}{a string venue name https://docs.openalex.org/api}
 }
