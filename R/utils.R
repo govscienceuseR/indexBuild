@@ -20,7 +20,7 @@ list2vector <- function(list,var,fill = NA){
 
 #' this is just a shorthand to go into lists within lists and grab items
 #' @param list a list of json openAlex results
-#' @param sublist the name of the 2nd level list
+#' @param subvar the name of the 2nd level list
 #' @param var the name of the variable to pull out from the 2nd level list
 #' @param fill replaces empty values with NA before collapsing to vector
 subitems2vector <- function(list,var,subvar,fill = NA){
@@ -39,6 +39,7 @@ flattenAuthorNames <- function(authors_json){
 
 #' openAlex provides A LOT of author info stored in json. this goes into the nested structure and pulls out just the author institutions
 #' @param authors_json a list in json structure that contains openAlex works
+#' @param institutional_var the variable to return for institution, either 'ror' (ROR ID#) or 'display name'
 #' @return a vector of strings, 1 string for each work, of author names pasted together separated by ";"
 #' @export
 flattenAuthorInstitutions <- function(authors_json,institutional_var = NULL){

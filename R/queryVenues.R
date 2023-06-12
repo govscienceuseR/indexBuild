@@ -9,12 +9,12 @@
 #' @import stringr
 #' @import httr
 
-queryVenues <- function(venue_string = NULL,mailto = NULL,type = NULL){
-  # type options are c('journal','respository','conference','ebook platform')
+queryVenues <- function(venue = NULL,mailto = NULL,type = NULL){
+  # type options are c('journal','repository','conference','ebook platform')
   venue_base <- 'https://api.openalex.org/venues'
   url <- parse_url(venue_base)
   if(!is.null(mailto)){url$query$mailto<-mailto}
-  if(!is.null(venue_string)){url$query$filter1<-paste0('display_name.search:',venue_string)}
+  if(!is.null(venue)){url$query$filter1<-paste0('display_name.search:',venue)}
   if(length(type)>1){type <- paste(type,collapse = 'OR')}
   if(!is.null(type)){url$query$filter2<-paste0('type.',type)}
   #if(length(url$query$filter)>1){url$query$filter<-paste(url$query$filter,collapse = '&')}

@@ -14,6 +14,8 @@
 #' @param dest_file location to save output as a json.gz
 #' @param return boolean for whether final result should be returned as workspace object
 #' @param reduce boolean for whether to reduce scope of final results, see @details
+#' @param venue_id (optional) openAlex ID# for the venue associated with the work(s)
+#' @param venue_page (optional) openAlex webpage for the venue
 #' @param override override 1M query result limit?
 #' @description Primary use is to query a concept ID and extract associated works, e.g., all article records associated with "habitat"
 #' @details Note that because extracted records can be pretty large, there is an optional "reduce" command that selects out a subset of key variables before saving or returning the final json list

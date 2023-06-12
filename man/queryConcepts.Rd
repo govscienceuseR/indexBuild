@@ -10,7 +10,8 @@ queryConcepts(
   per_page = 10,
   mailto = NULL,
   max_return = 100,
-  vs = c("id", "display_name", "level", "works_count", "works_api_url", "description")
+  variables = c("id", "display_name", "level", "works_count", "works_api_url",
+    "description")
 )
 }
 \arguments{

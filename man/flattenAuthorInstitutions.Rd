@@ -8,6 +8,8 @@ flattenAuthorInstitutions(authors_json, institutional_var = NULL)
 }
 \arguments{
 \item{authors_json}{a list in json structure that contains openAlex works}
+
+\item{institutional_var}{the variable to return for institution, either 'ror' (ROR ID#) or 'display name'}
 }
 \value{
 a vector of strings, 1 string for each work, of author names pasted together separated by ";"

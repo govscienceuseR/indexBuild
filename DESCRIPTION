@@ -23,6 +23,7 @@ Imports:
     stringr,
     httr,
     data.table,
+    purrr,
     methods
 Suggests: 
     rmarkdown,

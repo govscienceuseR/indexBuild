@@ -11,9 +11,9 @@ subitems2vector(list, var, subvar, fill = NA)
 
 \item{var}{the name of the variable to pull out from the 2nd level list}
 
-\item{fill}{replaces empty values with NA before collapsing to vector}
+\item{subvar}{the name of the 2nd level list}
 
-\item{sublist}{the name of the 2nd level list}
+\item{fill}{replaces empty values with NA before collapsing to vector}
 }
 \description{
 this is just a shorthand to go into lists within lists and grab items

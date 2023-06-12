@@ -34,6 +34,10 @@ extractWorks(
 
 \item{concept_page}{string for openAlex concept page url}
 
+\item{venue_id}{(optional) openAlex ID# for the venue associated with the work(s)}
+
+\item{venue_page}{(optional) openAlex webpage for the venue}
+
 \item{cursor}{boolean if TRUE will perform cursor pagination needed for iterating}
 
 \item{per_page}{how many works returned per page}
