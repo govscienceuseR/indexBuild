@@ -15,7 +15,7 @@
 #' @import httr
 #' @import data.table
 
-queryConcepts <- function(concept_string = NULL,maxlevel = 10,per_page = 10,mailto = NULL,max_return = 100,vs = c('id','display_name','level','works_count','works_api_url','description')){
+queryConcepts <- function(concept_string = NULL,maxlevel = 10,per_page = 10,mailto = NULL,max_return = 100,variables = c('id','display_name','level','works_count','works_api_url','description')){
   purl <- parse_url('https://api.openalex.org/concepts?')
   if(!is.null(mailto)){purl$query$mailto<-mailto}
   if(!is.null(concept_string)){purl$query$filter<-paste0('display_name.search:',concept_string)}
@@ -23,6 +23,6 @@ queryConcepts <- function(concept_string = NULL,maxlevel = 10,per_page = 10,mail
   if(!is.null(maxlevel)){purl$query$filter <- paste0(purl$query$filter,',level:<',maxlevel+1)}
   url <- build_url(purl)
   jresult <- read_json(url)
-  dt <- rbindlist(lapply(jresult$results,function(x) as.data.table(x[vs])),fill = T,use.names = T)
+  dt <- rbindlist(lapply(jresult$results,function(x) as.data.table(x[variables])),fill = T,use.names = T)
   return(dt)
 }
