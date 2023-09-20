@@ -23,11 +23,13 @@ queryOpenAlex <- function(title = NULL,mailto = NULL,wait_time = 5,max_results =
   if(code == 200){
     json_response<-content(response,as="parsed")
     if(json_response$meta$count == 0){
-      result <- data.table(title = title,query = query)
+      result <- data.table(query_title = title,query = query)
     }
     if(json_response$meta$count > 0){
       json_response$results <- json_response$results[!duplicated(sapply(json_response$results,'[[','id'))]
       result <- processOA(response = json_response)
+      result$query_title = title
+      result$query = query
     }
   }
   return(result)
