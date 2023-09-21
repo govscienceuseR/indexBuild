@@ -10,8 +10,8 @@ extractWorks(
   mailto = NULL,
   concept_id = NULL,
   concept_page = NULL,
-  venue_id = NULL,
-  venue_page = NULL,
+  source_id = NULL,
+  source_page = NULL,
   cursor = T,
   per_page = NULL,
   to_date = NULL,
@@ -34,9 +34,9 @@ extractWorks(
 
 \item{concept_page}{string for openAlex concept page url}
 
-\item{venue_id}{(optional) openAlex ID# for the venue associated with the work(s)}
+\item{source_id}{(optional) openAlex ID# for the source associated with the work(s)}
 
-\item{venue_page}{(optional) openAlex webpage for the venue}
+\item{source_page}{(optional) openAlex webpage for the source}
 
 \item{cursor}{boolean if TRUE will perform cursor pagination needed for iterating}
 
