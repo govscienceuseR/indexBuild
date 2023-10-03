@@ -12,23 +12,30 @@
 #' @param keep_paratext boolean to retain or exclude paratext from returns
 #' @param sleep_time time to Sys.sleep() in between cursor iterations
 #' @param dest_file location to save output as a json.gz
-#' @param return boolean for whether final result should be returned as workspace object
-#' @param reduce boolean for whether to reduce scope of final results, see @details
+#' @param return_to_workspace boolean for whether final result should be returned as workspace object
+#' @param data_style options for how much/how little data to return, see @details
 #' @param source_id (optional) openAlex ID# for the source associated with the work(s)
 #' @param source_page (optional) openAlex webpage for the source
 #' @param override override 1M query result limit?
 #' @description Primary use is to query a concept ID and extract associated works, e.g., all article records associated with "habitat"
-#' @details Note that because extracted records can be pretty large, there is an optional "reduce" command that selects out a subset of key variables before saving or returning the final json list
+#' @details Note that because extracted records can be pretty large--and are complicated, nested json file--there is an optional "data_style" command that lets the user specify what to return. Currently there are three options: (1) bare_bones returns OpenAlex ID + DOI, basically, results that can be used to look up the work again; (2) citation returns typical citation information, like journal name, author, etc. (3) custom can be tailored to suit researcher aims (note this likely requires building a funciton or two to parse a nested list of interest); and (4) all returns the entire result in original json format.
 #' @export
 #' @import jsonlite
 #' @import httr
 #' @import stringr
 
-extractWorks <- function(dest_file = NULL,override = F,mailto = NULL,concept_id = NULL,concept_page = NULL,source_id = NULL,source_page = NULL,cursor = T,per_page = NULL,to_date = NULL,from_date = NULL,keep_paratext = FALSE,debug = FALSE,sleep_time = 0.1,reduce = T,return = T){
+extractWorks <- function(dest_file = NULL,override = F,
+                         mailto = NULL,concept_id = NULL,
+                         concept_page = NULL,source_id = NULL,
+                         source_page = NULL,cursor = T,per_page = NULL,
+                         to_date = NULL,from_date = NULL,keep_paratext = FALSE,
+                         debug = FALSE,sleep_time = 0.1,
+                         data_style = c("bare_bones","all","citation","custom"),
+                         return_to_workspace = T){
   if(missing(concept_id)&!missing(concept_page)){concept_id <- stringr::str_extract(concept_page,'[A-Za-z0-9]+$')}
   if(missing(source_id)&!missing(source_page)){source_id <- stringr::str_extract(source_page,'[A-Za-z0-9]+$')}
   if(missing(source_id)&missing(concept_id)){stop("Must specify a concept and/or a source to query (using page or id)")}
-  if(missing(dest_file)&return==F){stop("Must specify a file destination to save the result or set return = T")}
+  if(missing(dest_file)&return_to_workspace==F){stop("Must specify a file destination to save the result or set return = T")}
   works_base <- 'https://api.openalex.org/works'
   url <- parse_url(works_base)
   if(!is.null(mailto)){
@@ -90,7 +97,7 @@ extractWorks <- function(dest_file = NULL,override = F,mailto = NULL,concept_id 
     print(paste('saving result'))
     write(json_object, file=gzfile(dest_file))
   }
-  if(return){return(json_object)}
+  if(return_to_workspace){return(json_object)}
   }
 }
 
