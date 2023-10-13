@@ -82,20 +82,16 @@ extractWorks <- function(dest_file = NULL,override = F,
       }
       else{print(paste0(js$meta$count,' works found'))}
     }
-    reduce_vars <- c('id','title','doi','source','cited_by_count','is_paratext','open_access','publication_year','authorships','type')
-    if(reduce){
-      js$results <- lapply(js$results,function(x) x[reduce_vars])
-      }
-    temp_js_list <- append(x = temp_js_list,js$results)
+    temp_js_list[[p]] <- js$results
     url$query$cursor<-js$meta$next_cursor
     qurl <- build_url(url)
     p <- p + 1
     Sys.sleep(sleep_time)
   }
-  json_object <- toJSON(temp_js_list)
+  json_object <- do.call('c',temp_js_list)
   if(!missing(dest_file)){
     print(paste('saving result'))
-    write(json_object, file=gzfile(dest_file))
+    saveRDS(json_object, file=dest_file)
   }
   if(return_to_workspace){return(json_object)}
   }
