@@ -52,13 +52,8 @@ extractWorks(
 
 \item{sleep_time}{time to Sys.sleep() in between cursor iterations}
 
-\item{data_style}{options for how much/how little data to return, see @details}
-
 \item{return_to_workspace}{boolean for whether final result should be returned as workspace object}
 }
 \description{
 Primary use is to query a concept ID and extract associated works, e.g., all article records associated with "habitat"
-}
-\details{
-Note that because extracted records can be pretty large--and are complicated, nested json file--there is an optional "data_style" command that lets the user specify what to return. Currently there are three options: (1) bare_bones returns OpenAlex ID + DOI, basically, results that can be used to look up the work again; (2) citation returns typical citation information, like journal name, author, etc. (3) custom can be tailored to suit researcher aims (note this likely requires building a funciton or two to parse a nested list of interest); and (4) all returns the entire result in original json format.
 }

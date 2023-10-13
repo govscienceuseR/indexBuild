@@ -13,12 +13,10 @@
 #' @param sleep_time time to Sys.sleep() in between cursor iterations
 #' @param dest_file location to save output as a json.gz
 #' @param return_to_workspace boolean for whether final result should be returned as workspace object
-#' @param data_style options for how much/how little data to return, see @details
 #' @param source_id (optional) openAlex ID# for the source associated with the work(s)
 #' @param source_page (optional) openAlex webpage for the source
 #' @param override override 1M query result limit?
 #' @description Primary use is to query a concept ID and extract associated works, e.g., all article records associated with "habitat"
-#' @details Note that because extracted records can be pretty large--and are complicated, nested json file--there is an optional "data_style" command that lets the user specify what to return. Currently there are three options: (1) bare_bones returns OpenAlex ID + DOI, basically, results that can be used to look up the work again; (2) citation returns typical citation information, like journal name, author, etc. (3) custom can be tailored to suit researcher aims (note this likely requires building a funciton or two to parse a nested list of interest); and (4) all returns the entire result in original json format.
 #' @export
 #' @import jsonlite
 #' @import httr
@@ -75,14 +73,16 @@ extractWorks <- function(dest_file = NULL,override = F,
   temp_js_list <- list()
   while(p==1|ifelse(!exists('js'),T,!is.null(js$meta$next_cursor))){
     print(paste('querying page',p))
-    js <- jsonlite::read_json(qurl)
+    js <- jsonlite::fromJSON(qurl)
     if(p==1){
       if(js$meta$count>1e6&!override){
         stop('more than 1M works returned, make a finer query')
       }
       else{print(paste0(js$meta$count,' works found'))}
     }
+
     temp_js_list[[p]] <- js$results
+
     url$query$cursor<-js$meta$next_cursor
     qurl <- build_url(url)
     p <- p + 1
@@ -96,7 +96,6 @@ extractWorks <- function(dest_file = NULL,override = F,
   if(return_to_workspace){return(json_object)}
   }
 }
-
 
 
 
