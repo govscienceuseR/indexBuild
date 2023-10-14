@@ -16,13 +16,14 @@
 #' @param source_id (optional) openAlex ID# for the source associated with the work(s)
 #' @param source_page (optional) openAlex webpage for the source
 #' @param override override 1M query result limit?
+#' @param exit_if_over integer value -- abort if you find more than this number of works
 #' @description Primary use is to query a concept ID and extract associated works, e.g., all article records associated with "habitat"
 #' @export
 #' @import jsonlite
 #' @import httr
 #' @import stringr
 
-extractWorks <- function(dest_file = NULL,override = F,
+extractWorks <- function(dest_file = NULL,override = 1e6,
                          mailto = NULL,concept_id = NULL,
                          concept_page = NULL,source_id = NULL,
                          source_page = NULL,cursor = T,per_page = NULL,
@@ -75,8 +76,8 @@ extractWorks <- function(dest_file = NULL,override = F,
     print(paste('querying page',p))
     js <- jsonlite::fromJSON(qurl)
     if(p==1){
-      if(js$meta$count>1e6&!override){
-        stop('more than 1M works returned, make a finer query')
+      if(js$meta$count>override){
+        stop(paste0('more than ',override,' works returned, set a higher limit or make a finer query'))
       }
       else{print(paste0(js$meta$count,' works found'))}
     }
