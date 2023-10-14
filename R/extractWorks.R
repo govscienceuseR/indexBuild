@@ -12,23 +12,29 @@
 #' @param keep_paratext boolean to retain or exclude paratext from returns
 #' @param sleep_time time to Sys.sleep() in between cursor iterations
 #' @param dest_file location to save output as a json.gz
-#' @param return boolean for whether final result should be returned as workspace object
-#' @param reduce boolean for whether to reduce scope of final results, see @details
+#' @param return_to_workspace boolean for whether final result should be returned as workspace object
 #' @param source_id (optional) openAlex ID# for the source associated with the work(s)
 #' @param source_page (optional) openAlex webpage for the source
 #' @param override override 1M query result limit?
+#' @param exit_if_over integer value -- abort if you find more than this number of works
 #' @description Primary use is to query a concept ID and extract associated works, e.g., all article records associated with "habitat"
-#' @details Note that because extracted records can be pretty large, there is an optional "reduce" command that selects out a subset of key variables before saving or returning the final json list
 #' @export
 #' @import jsonlite
 #' @import httr
 #' @import stringr
 
-extractWorks <- function(dest_file = NULL,override = F,mailto = NULL,concept_id = NULL,concept_page = NULL,source_id = NULL,source_page = NULL,cursor = T,per_page = NULL,to_date = NULL,from_date = NULL,keep_paratext = FALSE,debug = FALSE,sleep_time = 0.1,reduce = T,return = T){
+extractWorks <- function(dest_file = NULL,override = 1e6,
+                         mailto = NULL,concept_id = NULL,
+                         concept_page = NULL,source_id = NULL,
+                         source_page = NULL,cursor = T,per_page = NULL,
+                         to_date = NULL,from_date = NULL,keep_paratext = FALSE,
+                         debug = FALSE,sleep_time = 0.1,
+                         data_style = c("bare_bones","all","citation","custom"),
+                         return_to_workspace = T){
   if(missing(concept_id)&!missing(concept_page)){concept_id <- stringr::str_extract(concept_page,'[A-Za-z0-9]+$')}
   if(missing(source_id)&!missing(source_page)){source_id <- stringr::str_extract(source_page,'[A-Za-z0-9]+$')}
   if(missing(source_id)&missing(concept_id)){stop("Must specify a concept and/or a source to query (using page or id)")}
-  if(missing(dest_file)&return==F){stop("Must specify a file destination to save the result or set return = T")}
+  if(missing(dest_file)&return_to_workspace==F){stop("Must specify a file destination to save the result or set return = T")}
   works_base <- 'https://api.openalex.org/works'
   url <- parse_url(works_base)
   if(!is.null(mailto)){
@@ -68,32 +74,29 @@ extractWorks <- function(dest_file = NULL,override = F,mailto = NULL,concept_id 
   temp_js_list <- list()
   while(p==1|ifelse(!exists('js'),T,!is.null(js$meta$next_cursor))){
     print(paste('querying page',p))
-    js <- jsonlite::read_json(qurl)
+    js <- jsonlite::fromJSON(qurl)
     if(p==1){
-      if(js$meta$count>1e6&!override){
-        stop('more than 1M works returned, make a finer query')
+      if(js$meta$count>override){
+        stop(paste0('more than ',override,' works returned, set a higher limit or make a finer query'))
       }
       else{print(paste0(js$meta$count,' works found'))}
     }
-    reduce_vars <- c('id','title','doi','source','cited_by_count','is_paratext','open_access','publication_year','authorships','type')
-    if(reduce){
-      js$results <- lapply(js$results,function(x) x[reduce_vars])
-      }
-    temp_js_list <- append(x = temp_js_list,js$results)
+
+    temp_js_list[[p]] <- js$results
+
     url$query$cursor<-js$meta$next_cursor
     qurl <- build_url(url)
     p <- p + 1
     Sys.sleep(sleep_time)
   }
-  json_object <- toJSON(temp_js_list)
+  json_object <- do.call('c',temp_js_list)
   if(!missing(dest_file)){
     print(paste('saving result'))
-    write(json_object, file=gzfile(dest_file))
+    saveRDS(json_object, file=dest_file)
   }
-  if(return){return(json_object)}
+  if(return_to_workspace){return(json_object)}
   }
 }
-
 
 
 

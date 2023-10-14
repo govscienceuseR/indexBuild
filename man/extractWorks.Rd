@@ -19,8 +19,8 @@ extractWorks(
   keep_paratext = FALSE,
   debug = FALSE,
   sleep_time = 0.1,
-  reduce = T,
-  return = T
+  data_style = c("bare_bones", "all", "citation", "custom"),
+  return_to_workspace = T
 )
 }
 \arguments{
@@ -52,13 +52,8 @@ extractWorks(
 
 \item{sleep_time}{time to Sys.sleep() in between cursor iterations}
 
-\item{reduce}{boolean for whether to reduce scope of final results, see @details}
-
-\item{return}{boolean for whether final result should be returned as workspace object}
+\item{return_to_workspace}{boolean for whether final result should be returned as workspace object}
 }
 \description{
 Primary use is to query a concept ID and extract associated works, e.g., all article records associated with "habitat"
-}
-\details{
-Note that because extracted records can be pretty large, there is an optional "reduce" command that selects out a subset of key variables before saving or returning the final json list
 }
