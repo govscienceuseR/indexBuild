@@ -6,7 +6,7 @@
 \usage{
 extractWorks(
   dest_file = NULL,
-  override = F,
+  override = 1e+06,
   mailto = NULL,
   concept_id = NULL,
   concept_page = NULL,
@@ -53,6 +53,8 @@ extractWorks(
 \item{sleep_time}{time to Sys.sleep() in between cursor iterations}
 
 \item{return_to_workspace}{boolean for whether final result should be returned as workspace object}
+
+\item{exit_if_over}{integer value -- abort if you find more than this number of works}
 }
 \description{
 Primary use is to query a concept ID and extract associated works, e.g., all article records associated with "habitat"
