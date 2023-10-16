@@ -58,15 +58,17 @@ parseLocationObject <- function(work = NULL, primary = TRUE){
     temp = work[['primary_location']]
     temp2 <- temp[sapply(temp,length)<2]
     temp3 <- temp$source[sapply(temp,length)<2]
+    keep <- c('id','display_name','issn_l','is_oa','host_organization','type')
+    temp3 <- temp3[keep]
     names(temp3)<-paste0('source.',names(temp3))
-    primary_location = cbind(temp2,temp3)
+    primary_location <- cbind(as.data.table(temp2),
+    as.data.table(temp3))
     return(primary_location)
   }
   else{
     stop('currently, only primary location is supported. this will be addressed in a future build')
   }
 }
-
 
 #' openAlex stores information about a work's authors(s) as a list nested in the larger works object. This function takes the works object and returns a flatted version of the location object which can be "cbinded" with the works object.
 #' @param work an openAlex works object
@@ -74,17 +76,16 @@ parseLocationObject <- function(work = NULL, primary = TRUE){
 #' @export
 parseAuthorsObject <- function(work = NULL){
   if(missing(work)){stop('please provide an openAlex works object')}
-  if(primary){
-    temp = work[['primary_location']]
-    temp2 <- temp[sapply(temp,length)<2]
-    temp3 <- temp$source[sapply(temp,length)<2]
-    names(temp3)<-paste0('source.',names(temp3))
-    primary_location = cbind(temp2,temp3)
-    return(primary_location)
+  # which author info items to keep
+  auth_keep <- c('author_id','author_display_name','institutions_id','institutions_country_code','institutions_type','institutions_display_name')
+ #### flatten twice to collapse two levels
+  author_dt_list <- lapply(w$authorships,function(x){
+  flat_author <- purrr::list_flatten(purrr::list_flatten(x))
+  author_flat <- as.data.table(flat_author[names(flat_author) %in% auth_keep])
+  author_flat})
+  if(length(w$authorships)==1){author_dt <- author_dt_list[[1]]}else{author_dt <- rbindlist(author_dt_list,use.names = T,fill = T)}
+  return(author_dt)
   }
-  else{
-    stop('currently, only primary location is supported. this will be addressed in a future build')
-  }
-}
+
 
 
