@@ -12,18 +12,28 @@
 test <- readRDS('../truckee/ria_analysis/large_input/journal_records/S108525051.json.gz')
 
 processWork <- function(work = NULL,style = c('bare_bones','citation','custom','all')){
-  work <- test[[10]]
+  work <- test[[15]]
   dt <- data.table()
   bare_bones <- c('id','doi')
   citation <- c(bare_bones,'author.display_name','publication_year','display_name','source.display_name','source.id','volume','issue','first_page','last_page')
   custom <- c(citation,'is_oa','source.is_oa','author.institutions.id','author.institutions.type','author.institutions.country_code','type','cited_by_count','grants.funder.id','grants.funder_display_name','source.issn_l')
   all <- NULL
   if(style == 'all'){stop('returning all data as flat file currently not supported, please select another style')}
-  if(style == 'bare_bones'){return(as.data.table(works[c('id','doi')]))}
+  if(style == 'bare_bones'){return(as.data.table(work[c('id','doi')]))}
   if(style!='bare_bones'){
     source_info <- parseLocationObject(work)
-    source_info
-}
+    author_table <- parseAuthorsObject(work)
+    author_table$author_id <- basename(author_table$author_id)
+    author_collapse <- author_table[,lapply(.SD,paste,collapse = ';'),.SDcols = names(author_table)]
+
+    cbind(source_info,author_collapse)
+    str(apply(author_table,2,paste,collapse = ';',simplify = T))
+
+    data.table(author_collapse)
+source_info
+dim(author_collapse)
+    dim(cbind(source_info,author_collapse))
+    }
 
 
 work2dt <- function(works = NULL,style = c('bare_bones','citation','custom','all')){

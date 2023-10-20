@@ -79,11 +79,11 @@ parseAuthorsObject <- function(work = NULL){
   # which author info items to keep
   auth_keep <- c('author_id','author_display_name','institutions_id','institutions_country_code','institutions_type','institutions_display_name')
  #### flatten twice to collapse two levels
-  author_dt_list <- lapply(w$authorships,function(x){
+  author_dt_list <- lapply(work$authorships,function(x){
   flat_author <- purrr::list_flatten(purrr::list_flatten(x))
   author_flat <- as.data.table(flat_author[names(flat_author) %in% auth_keep])
   author_flat})
-  if(length(w$authorships)==1){author_dt <- author_dt_list[[1]]}else{author_dt <- rbindlist(author_dt_list,use.names = T,fill = T)}
+  if(length(work$authorships)==1){author_dt <- author_dt_list[[1]]}else{author_dt <- rbindlist(author_dt_list,use.names = T,fill = T)}
   return(author_dt)
   }
 
