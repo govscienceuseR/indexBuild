@@ -72,7 +72,7 @@ parseLocationObject <- function(work = NULL, primary = TRUE){
 
 #' openAlex stores information about a work's authors(s) as a list nested in the larger works object. This function takes the works object and returns a flatted version of the location object which can be "cbinded" with the works object.
 #' @param work an openAlex works object
-#' @return a flattened data.table of location info
+#' @return a flattened data.table of authorship info
 #' @export
 parseAuthorsObject <- function(work = NULL){
   if(missing(work)){stop('please provide an openAlex works object')}
@@ -83,9 +83,29 @@ parseAuthorsObject <- function(work = NULL){
   flat_author <- purrr::list_flatten(purrr::list_flatten(x))
   author_flat <- as.data.table(flat_author[names(flat_author) %in% auth_keep])
   author_flat})
-  if(length(work$authorships)==1){author_dt <- author_dt_list[[1]]}else{author_dt <- rbindlist(author_dt_list,use.names = T,fill = T)}
+  authors_n <- length(work$authorships)
+  if(authors_n==1){author_dt <- author_dt_list[[1]]}else{author_dt <- rbindlist(author_dt_list,use.names = T,fill = T)}
   return(author_dt)
   }
+
+
+
+#' openAlex stores information about a work's funding as a list nested in the larger works object. This function takes the works object and returns a flatted version of the location object which can be "cbinded" with the works object.
+#' @param work an openAlex works object
+#' @return a flattened data.table of funding info
+#' @export
+parseGrantsObject <- function(work = NULL){
+  if(missing(work)){stop('please provide an openAlex works object')}
+  # which grant info items to keep
+  grant_keep <- c('funder','funder_display_name','award_id')
+  #### flatten twice to collapse two levels
+  grant_dt_list <- lapply(work$grants,function(x){
+    flat_grant <- purrr::list_flatten(purrr::list_flatten(x))
+    grant_flat <- as.data.table(flat_grant[names(flat_grant) %in% grant_keep])
+    grant_flat})
+  if(length(work$grants)==1){grant_dt <- grant_dt_list[[1]]}else{grant_dt <- rbindlist(grant_dt_list,use.names = T,fill = T)}
+  return(grant_dt)
+}
 
 
 
