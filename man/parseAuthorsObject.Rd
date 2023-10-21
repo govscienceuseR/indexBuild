@@ -10,7 +10,7 @@ parseAuthorsObject(work = NULL)
 \item{work}{an openAlex works object}
 }
 \value{
-a flattened data.table of location info
+a flattened data.table of authorship info
 }
 \description{
 openAlex stores information about a work's authors(s) as a list nested in the larger works object. This function takes the works object and returns a flatted version of the location object which can be "cbinded" with the works object.
