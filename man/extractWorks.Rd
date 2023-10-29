@@ -2,9 +2,10 @@
 % Please edit documentation in R/extractWorks.R
 \name{extractWorks}
 \alias{extractWorks}
-\title{Extract works associated with a concept in openAlex}
+\title{Extract works associated with a concept in openAlex and store data as a compressed R list object}
 \usage{
 extractWorks(
+  data_style = c("bare_bones", "citation", "comprehensive", "all"),
   dest_file = NULL,
   override = 1e+06,
   mailto = NULL,
@@ -19,11 +20,13 @@ extractWorks(
   keep_paratext = FALSE,
   debug = FALSE,
   sleep_time = 0.1,
-  data_style = c("bare_bones", "all", "citation", "custom"),
+  parallel = 1,
   return_to_workspace = T
 )
 }
 \arguments{
+\item{data_style}{options for how much/how little data to return, see @details}
+
 \item{dest_file}{location to save output as a json.gz}
 
 \item{override}{override 1M query result limit?}
@@ -52,10 +55,15 @@ extractWorks(
 
 \item{sleep_time}{time to Sys.sleep() in between cursor iterations}
 
+\item{parallel}{defaults to 1, sets cluster value in pblapply for processing works in parallel. may provide speed-ups for large lists.}
+
 \item{return_to_workspace}{boolean for whether final result should be returned as workspace object}
 
 \item{exit_if_over}{integer value -- abort if you find more than this number of works}
 }
 \description{
-Primary use is to query a concept ID and extract associated works, e.g., all article records associated with "habitat"
+Primary use is to extract works associated with a given journal (source) or concept. Because the OpenAlex API limits returns to 200, this function iterates to grab all works returned by the query. Each return is a list or 200 works, to which the processWork() function is applied to iteratively develop a flat file.
+}
+\details{
+Note that because extracted records can be pretty large--and are complicated, nested json file--there is an optional "data_style" command that lets the user specify what to return. Currently there are three options: (1) bare_bones returns OpenAlex ID + DOI, basically, results that can be used to look up the work again; (2) citation returns typical citation information, like journal name, author, etc., with a couple bonus items like source.id to link back to openAlex (3) comprehensive returns author institutional affiliations, open access info, funding data, etc.; and (4) all returns the entire result in original json format.
 }

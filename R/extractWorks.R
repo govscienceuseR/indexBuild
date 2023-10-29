@@ -1,5 +1,6 @@
-#' Extract works associated with a concept in openAlex
+#' Extract works associated with a concept in openAlex and store data as a compressed R list object
 #'
+#' @param data_style options for how much/how little data to return, see @details
 #' @param mailto email address of user, needed to get in 'polite pool' of API
 #' @param concept_id a concept id string (https://docs.openalex.org/api)
 #' @param debug boolean, if TRUE returns query url, if FALSE actually does query
@@ -16,20 +17,24 @@
 #' @param source_id (optional) openAlex ID# for the source associated with the work(s)
 #' @param source_page (optional) openAlex webpage for the source
 #' @param override override 1M query result limit?
+#' @param parallel defaults to 1, sets cluster value in pblapply for processing works in parallel. may provide speed-ups for large lists.
 #' @param exit_if_over integer value -- abort if you find more than this number of works
-#' @description Primary use is to query a concept ID and extract associated works, e.g., all article records associated with "habitat"
+#' @description Primary use is to extract works associated with a given journal (source) or concept. Because the OpenAlex API limits returns to 200, this function iterates to grab all works returned by the query. Each return is a list or 200 works, to which the processWork() function is applied to iteratively develop a flat file.
+#' @details Note that because extracted records can be pretty large--and are complicated, nested json file--there is an optional "data_style" command that lets the user specify what to return. Currently there are three options: (1) bare_bones returns OpenAlex ID + DOI, basically, results that can be used to look up the work again; (2) citation returns typical citation information, like journal name, author, etc., with a couple bonus items like source.id to link back to openAlex (3) comprehensive returns author institutional affiliations, open access info, funding data, etc.; and (4) all returns the entire result in original json format.
 #' @export
 #' @import jsonlite
 #' @import httr
 #' @import stringr
+#' @import data.table
+#' @importFrom pbapply pblapply
 
-extractWorks <- function(dest_file = NULL,override = 1e6,
+extractWorks <- function(data_style = c('bare_bones','citation','comprehensive','all'),
+                         dest_file = NULL,override = 1e6,
                          mailto = NULL,concept_id = NULL,
                          concept_page = NULL,source_id = NULL,
                          source_page = NULL,cursor = T,per_page = NULL,
                          to_date = NULL,from_date = NULL,keep_paratext = FALSE,
-                         debug = FALSE,sleep_time = 0.1,
-                         data_style = c("bare_bones","all","citation","custom"),
+                         debug = FALSE,sleep_time = 0.1,parallel = 1,
                          return_to_workspace = T){
   if(missing(concept_id)&!missing(concept_page)){concept_id <- stringr::str_extract(concept_page,'[A-Za-z0-9]+$')}
   if(missing(source_id)&!missing(source_page)){source_id <- stringr::str_extract(source_page,'[A-Za-z0-9]+$')}
@@ -71,32 +76,31 @@ extractWorks <- function(dest_file = NULL,override = 1e6,
   if(debug){return(qurl)}
   if(!debug){
   p = 1
-  temp_js_list <- list()
+  store_results <- list()
   while(p==1|ifelse(!exists('js'),T,!is.null(js$meta$next_cursor))){
     print(paste('querying page',p))
-    js <- jsonlite::fromJSON(qurl)
+    ## json return
+    js <- jsonlite::read_json(qurl)
+    ### js$results is list with length = per_page (or less if fewer than per_page works are returned)
     if(p==1){
       if(js$meta$count>override){
         stop(paste0('more than ',override,' works returned, set a higher limit or make a finer query'))
       }
       else{print(paste0(js$meta$count,' works found'))}
     }
-
-    temp_js_list[[p]] <- js$results
-
+    store_results <- append(store_results,js$results)
     url$query$cursor<-js$meta$next_cursor
     qurl <- build_url(url)
     p <- p + 1
     Sys.sleep(sleep_time)
   }
-  json_object <- do.call('c',temp_js_list)
-  if(!missing(dest_file)){
+    print(paste('processing',length(store_results),'works'))
+    processed_list <- lapply(store_results,processWork,data_style = data_style)
+    processed_dt <- rbindlist(processed_list,use.names = T,fill = T)
+ if(!missing(dest_file)){
     print(paste('saving result'))
-    saveRDS(json_object, file=dest_file)
+    saveRDS(object = processed_dt, file = dest_file)
   }
-  if(return_to_workspace){return(json_object)}
+  if(return_to_workspace){return(processed_dt)}
   }
 }
-
-
-
