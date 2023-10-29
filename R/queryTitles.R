@@ -5,7 +5,7 @@
 #' @param wait_time how long to wait on query results before timing out, in seconds
 #' @param max_results how many results to return (uses "per_page" feature on OA to grab first page of results)
 #' @param url the base url for openAlex query
-#' @param data_style options for extractWorks() --> how much/how little data to return, see @details
+#' @param data_style options for processWork() --> how much/how little data to grab from json list, see @details
 #' @description Primary use of this function is to make a query object for use in openAlex that returns potential matches to a title string
 #' @examples
 #' data(titles)
