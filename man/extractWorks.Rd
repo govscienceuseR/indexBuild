@@ -67,3 +67,13 @@ Primary use is to extract works associated with a given journal (source) or conc
 \details{
 Note that because extracted records can be pretty large--and are complicated, nested json file--there is an optional "data_style" command that lets the user specify what to return. Currently there are three options: (1) bare_bones returns OpenAlex ID + DOI, basically, results that can be used to look up the work again; (2) citation returns typical citation information, like journal name, author, etc., with a couple bonus items like source.id to link back to openAlex (3) comprehensive returns author institutional affiliations, open access info, funding data, etc.; and (4) all returns the entire result in original json format.
 }
+\examples{
+# concept usage of extractWorks()
+id <- queryConcepts('public administration')
+extractWorks(concept_id = id$id,from_date = 2020,to_date = 2021,cursor = F,data_style = 'citation',per_page = 10)
+# journal (source) usage of extractWorks()
+id <- querySources(source = 'Journal of Public Administration Research and Theory')
+extractWorks(source_id =id$results[[1]]$id,cursor = F,data_style = 'citation',per_page = 10)
+
+
+}

@@ -27,6 +27,7 @@
 #' @import stringr
 #' @import data.table
 #' @importFrom pbapply pblapply
+#' @example man/examples/extract.R
 
 extractWorks <- function(data_style = c('bare_bones','citation','comprehensive','all'),
                          dest_file = NULL,override = 1e6,
@@ -95,7 +96,7 @@ extractWorks <- function(data_style = c('bare_bones','citation','comprehensive',
     Sys.sleep(sleep_time)
   }
     print(paste('processing',length(store_results),'works'))
-    processed_list <- lapply(store_results,processWork,data_style = data_style)
+    processed_list <- pblapply(store_results,processWork,data_style = data_style,cl = parallel)
     processed_dt <- rbindlist(processed_list,use.names = T,fill = T)
  if(!missing(dest_file)){
     print(paste('saving result'))

@@ -57,10 +57,12 @@ parseLocationObject <- function(work = NULL, primary = TRUE){
   if(primary){
     temp = work[['primary_location']]
     temp2 <- temp[sapply(temp,length)<2]
-    temp3 <- temp$source[sapply(temp,length)<2]
-    keep <- c('id','display_name','issn_l','is_oa','host_organization','type')
-    temp3 <- temp3[keep]
-    names(temp3)<-paste0('source.',names(temp3))
+    if(!is.null(temp$source)){
+      temp3 <- temp$source[sapply(temp,length)<2]
+      keep <- c('id','display_name','issn_l','is_oa','host_organization','type')
+      temp3 <- temp3[names(temp3) %in% keep]
+      names(temp3)<-paste0('source.',names(temp3))
+    }else{temp3 <- NULL}
     primary_location <- cbind(as.data.table(temp2),
     as.data.table(temp3))
     return(primary_location)
