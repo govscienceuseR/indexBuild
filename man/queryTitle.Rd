@@ -24,7 +24,7 @@ queryTitle(
 
 \item{url}{the base url for openAlex query}
 
-\item{data_style}{options for extractWorks() --> how much/how little data to return, see @details}
+\item{data_style}{options for processWork() --> how much/how little data to grab from json list, see @details}
 }
 \description{
 Primary use of this function is to make a query object for use in openAlex that returns potential matches to a title string
