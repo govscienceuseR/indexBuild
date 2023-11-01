@@ -5,6 +5,7 @@
 #' @param type which type of source should be included in query, defaults to all
 #' @description Primary use of this function is to get source ID for use in API
 #' @export
+#' @example man/examples/sources.R
 #' @import jsonlite
 #' @import stringr
 #' @import httr
