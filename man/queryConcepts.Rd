@@ -36,3 +36,10 @@ Search spreadsheet of openAlex concept tree (see https://docs.openalex.org/about
 \details{
 NOTE: note that https://api.openalex.org/concepts doesn't seem to tolerate regex at this point, so that needs to be done with the output
 }
+\examples{
+# find concepts in openAlex
+id <- queryConcepts(concept_string = 'public policy')
+print(id)
+
+
+}

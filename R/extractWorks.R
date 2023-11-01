@@ -1,4 +1,4 @@
-#' Extract works associated with a concept in openAlex and store data as a compressed R list object
+#' Extract works associated with a source or concept in openAlex and store data as a compressed R list object
 #'
 #' @param data_style options for how much/how little data to return, see @details
 #' @param mailto email address of user, needed to get in 'polite pool' of API

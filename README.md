@@ -8,12 +8,26 @@ The full openAlex database is ~300GB and so hosting the entire database is not a
 
 # functions
 
-indexBuild currently does three main tasks: (1) search and identify IDs for venues (e.g., journals) and concept tags in openAlex; (2) query works associated with venues or concepts in openAlex and return a json database; (3) turn json file trees for openAlex works into a row-wise data.table object with a simple subset of metadata. Right now, the first two tasks are split across venues and concepts, e.g., there are separate extractVenues() and extractConcepts() functions. At some point, these can be combined.
+indexBuild currently does three main tasks: 
+
+## (1) search and identify IDs for venues (e.g., journals) and concept tags in openAlex
+
+- `queryConcepts()` lets you search for concepts that works are tagged with in OpenAlex. Example use case: find openAlex ID for "public administration" and use that ID to subsequently query for works tagged with this concept.
+- `querySources()` lets you search for journals in openAlex. Use case is to get journal IDs that can then be used to extract journal information or access all works associated with a journal.
+- `queryTitles()` lets you input the name/title of a reference and search for matches in openAlex. Use case is to generate a list of candidate matches that can be indexed for more comprehensive, multivariate search. 
+- `lookupJournal()` is a convenience function for matching ISSN IDs to openAlex identifiers. Example use case is linking journal data from SciMago to OpenAlex.
+
+
+## (2) extract data for works associated with a given venue or concept in openAlex and return a json database; 
+
+- `extractWorks()` lets you input source or concept id and returns query result containing all works associated with that ID in openAlex.
+
+Currently, `extractWorks()` handles processing internally, applying the `processWork()` function to JSON query results to develop a flat file (data.table) representation of the results. `processWork` has multiple return options, including 'bare_bones' which returns just DOI and openAlex ID (useful for further query), 'citation' which returns basic reference information, and 'comprehensive' which returns extra information like authors' institutional affiliations, available funding data, and open access information. Note that where necessary, `processWork` collapses entries using the ';' separator to store multiple entries (e.g., co-author names and IDs) in a single table entry.
 
 # example
 To get information about a journal, you can feed in a journal title:
 ```
-queryVenues(venue_string = 'Journal of Public Administration Research and Theory')
+querySources(venue_string = 'Journal of Public Administration Research and Theory')
 ```
 
 and get information about a concept, you can feed in a concept. 

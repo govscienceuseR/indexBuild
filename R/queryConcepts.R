@@ -8,6 +8,7 @@
 #' @param variables to return in data.table
 #' @description Search spreadsheet of openAlex concept tree (see https://docs.openalex.org/about-the-data/concept). Current google sheet url is: https://docs.google.com/spreadsheets/d/1LBFHjPt4rj_9r0t0TTAlT68NwOtNH8Z21lBMsJDMoZg/edit#gid=1473310811
 #' @return datatable of results
+#' @example man/examples/concept.R
 #' @export
 #' @details NOTE: note that https://api.openalex.org/concepts doesn't seem to tolerate regex at this point, so that needs to be done with the output
 #' @importFrom stringr str_detect

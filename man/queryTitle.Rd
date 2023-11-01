@@ -36,4 +36,8 @@ Note that because extracted records can be pretty large--and are complicated, ne
 data(titles)
 #query a single titles
 queryOpenAlex(titles[22])
+# find journal in openAlex
+id <- querySources(source = 'Journal of Public Administration Research and Theory')
+print(id)
+
 }

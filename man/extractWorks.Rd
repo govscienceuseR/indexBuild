@@ -2,7 +2,7 @@
 % Please edit documentation in R/extractWorks.R
 \name{extractWorks}
 \alias{extractWorks}
-\title{Extract works associated with a concept in openAlex and store data as a compressed R list object}
+\title{Extract works associated with a source or concept in openAlex and store data as a compressed R list object}
 \usage{
 extractWorks(
   data_style = c("bare_bones", "citation", "comprehensive", "all"),

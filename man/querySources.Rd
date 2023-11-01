@@ -16,3 +16,9 @@ querySources(source = NULL, mailto = NULL, type = NULL)
 \description{
 Primary use of this function is to get source ID for use in API
 }
+\examples{
+# find journal in openAlex
+id <- querySources(source = 'Journal of Public Administration Research and Theory')
+print(id)
+
+}
