@@ -7,9 +7,9 @@
 #' @importFrom methods is
 #' @import data.table
 #' @param data_style options for how much/how little data to return, see @details
-#' @details Note that because extracted records can be pretty large--and are complicated, nested json file--there is an optional "data_style" command that lets the user specify what to return. Currently there are three options: (1) bare_bones returns OpenAlex ID + DOI, basically, results that can be used to look up the work again; (2) citation returns typical citation information, like journal name, author, etc., with a couple bonus items like source.id to link back to openAlex (3) custom can be tailored to suit researcher aims (note this likely requires building a funciton or two to parse a nested list of interest); and (4) all returns the entire result in original json format.
+#' @details Note that because extracted records can be pretty large--and are complicated, nested json file--there is an optional "data_style" command that lets the user specify what to return. Currently there are three options: (1) bare_bones returns OpenAlex ID + DOI, basically, results that can be used to look up the work again; (2) citation returns typical citation information, like journal name, author, etc., with a couple bonus items like source.id to link back to openAlex (3) comprehensive returns author institutional affiliations, open access info, funding data, etc.; and (4) all returns the entire result in original json format.
 
-processWork <- function(work = NULL,data_style = c('bare_bones','citation','custom','all')){
+processWork <- function(work = NULL,data_style = c('bare_bones','citation','comprehensive','all')){
   dt <- data.table()
   bare_bones <- c('id','doi')
   citation <- c(bare_bones,'author.display_name','publication_year','display_name','source.display_name','source.id','volume','issue','first_page','last_page')
