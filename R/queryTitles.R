@@ -37,6 +37,7 @@ queryTitle <- function(title = NULL,mailto = NULL,wait_time = 5,max_results = 5,
     }
   }
   return(result)
+  Sys.sleep(2)
 }
 
 #' Vectorized search for and return candidate matches to a title in openAlex
