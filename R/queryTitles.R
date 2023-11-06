@@ -30,7 +30,8 @@ queryTitle <- function(title = NULL,mailto = NULL,wait_time = 5,max_results = 5,
     }
     if(json_response$meta$count > 0){
       json_response$results <- json_response$results[!duplicated(sapply(json_response$results,'[[','id'))]
-      result <- processWork(work = json_response$results,data_style = 'citation')
+      # Replacing processWork with processOA because it actually flattens
+      result <- processOA(json_response$results)
       result$query_title = title
       result$query = query
     }
