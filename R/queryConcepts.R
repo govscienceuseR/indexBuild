@@ -25,4 +25,5 @@ queryConcepts <- function(concept_string = NULL,maxlevel = 10,per_page = 10,mail
   jresult <- read_json(url)
   dt <- rbindlist(lapply(jresult$results,function(x) as.data.table(x[variables])),fill = T,use.names = T)
   return(dt)
+  Sys.sleep(2)
 }
