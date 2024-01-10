@@ -17,6 +17,8 @@
 #' @param source_id (optional) openAlex ID# for the source associated with the work(s)
 #' @param source_page (optional) openAlex webpage for the source
 #' @param override override 1M query result limit?
+#' @param batch_size how large to chunk up into subfiles?, defaults to 50e3
+#' @param subdivision numeric value, defaults to 100k. If number returned is over this value, saves subsets of this return in 50k increments as `[ID]_[increment].rds`
 #' @param parallel defaults to 1, sets cluster value in pblapply for processing works in parallel. may provide speed-ups for large lists.
 #' @param exit_if_over integer value -- abort if you find more than this number of works
 #' @description Primary use is to extract works associated with a given journal (source) or concept. Because the OpenAlex API limits returns to 200, this function iterates to grab all works returned by the query. Each return is a list or 200 works, to which the processWork() function is applied to iteratively develop a flat file.
@@ -30,7 +32,7 @@
 #' @example man/examples/extract.R
 
 extractWorks <- function(data_style = c('bare_bones','citation','comprehensive','all'),
-                         dest_file = NULL,override = 1e6,
+                         dest_file = NULL,override = 1e6,batch_size = 50e3,
                          mailto = NULL,concept_id = NULL,
                          concept_page = NULL,source_id = NULL,
                          source_page = NULL,cursor = T,per_page = NULL,
@@ -78,6 +80,7 @@ extractWorks <- function(data_style = c('bare_bones','citation','comprehensive',
   if(!debug){
   p = 1
   store_results <- list()
+  iterfile <- 1
   while(p==1|ifelse(!exists('js'),T,!is.null(js$meta$next_cursor))){
     print(paste('querying page',p))
     ## json return
@@ -90,6 +93,14 @@ extractWorks <- function(data_style = c('bare_bones','citation','comprehensive',
       else{print(paste0(js$meta$count,' works found'))}
     }
     store_results <- append(store_results,js$results)
+    if(length(store_results)>=batch_size){
+      print(paste('processing',length(store_results),'works from',jid))
+      processed_list <- pblapply(store_results,processWork,data_style = data_style,cl = parallel)
+      processed_dt <- rbindlist(processed_list,use.names = T,fill = T)
+      saveRDS(object = processed_dt, file = stringr::str_replace(dest_file,'\\.rds$',paste0('_',iterfile,'.rds')))
+      iterfile <- iterfile + 1
+      store_results <- list()
+    }
     url$query$cursor<-js$meta$next_cursor
     qurl <- build_url(url)
     p <- p + 1
@@ -100,8 +111,14 @@ extractWorks <- function(data_style = c('bare_bones','citation','comprehensive',
     processed_dt <- rbindlist(processed_list,use.names = T,fill = T)
  if(!missing(dest_file)){
     print(paste('saving result'))
-    saveRDS(object = processed_dt, file = dest_file)
+    if(iterfile>1){saveRDS(object = processed_dt,
+                           file = stringr::str_replace(dest_file,'\\.rds$',
+                                                       paste0('_',iterfile,'.rds')))}else{
+      saveRDS(object = processed_dt, file = dest_file)
+      }
+    }
+
   }
   if(return_to_workspace){return(processed_dt)}
   }
-}
+

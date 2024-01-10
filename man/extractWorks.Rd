@@ -8,6 +8,7 @@ extractWorks(
   data_style = c("bare_bones", "citation", "comprehensive", "all"),
   dest_file = NULL,
   override = 1e+06,
+  batch_size = 50000,
   mailto = NULL,
   concept_id = NULL,
   concept_page = NULL,
@@ -30,6 +31,8 @@ extractWorks(
 \item{dest_file}{location to save output as a json.gz}
 
 \item{override}{override 1M query result limit?}
+
+\item{batch_size}{how large to chunk up into subfiles?, defaults to 50e3}
 
 \item{mailto}{email address of user, needed to get in 'polite pool' of API}
 
@@ -58,6 +61,8 @@ extractWorks(
 \item{parallel}{defaults to 1, sets cluster value in pblapply for processing works in parallel. may provide speed-ups for large lists.}
 
 \item{return_to_workspace}{boolean for whether final result should be returned as workspace object}
+
+\item{subdivision}{numeric value, defaults to 100k. If number returned is over this value, saves subsets of this return in 50k increments as \verb{[ID]_[increment].rds}}
 
 \item{exit_if_over}{integer value -- abort if you find more than this number of works}
 }
