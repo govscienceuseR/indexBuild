@@ -30,7 +30,7 @@ queryTitle <- function(title = NULL,mailto = NULL,wait_time = 5,max_results = 5,
     }
     if(json_response$meta$count > 0){
       json_response$results <- json_response$results[!duplicated(sapply(json_response$results,'[[','id'))]
-      result <- processWork(work = json_response$results,data_style = 'citation')
+      result <- processWork(work = json_response$results,data_style = data_style)
       result$query_title = title
       result$query = query
     }
@@ -47,7 +47,7 @@ queryTitle <- function(title = NULL,mailto = NULL,wait_time = 5,max_results = 5,
 #' @param max_results how many results to return (uses "per_page" feature on OA to grab first page of results)
 #' @param url the base url for openAlex query
 #' @export
-queriesTitles <- Vectorize(queryTitle,vectorize.args = 'title',SIMPLIFY = F)
+queryTitles <- Vectorize(queryTitle,vectorize.args = 'title',SIMPLIFY = F)
 
 
 #' Take a title string and make a query
