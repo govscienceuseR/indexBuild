@@ -19,9 +19,6 @@
 #' @export
 #'
 queryTitle <- function(title = NULL,mailto = NULL,wait_time = 5,max_results = 5,url = "https://api.openalex.org/works",data_style = c('bare_bones','citation','comprehensive','all')){
-  title = 'Reduction in Fine Particulate Air Pollution and Mortality'
-  max_results = 5;wait_time = 5;mailto = 'tascott@ucdavis.edu'
-  url = "https://api.openalex.org/works";data_style = 'citation'
   query <- generateTitleQuery(title = title,mailto = mailto,max_results = max_results,url = url)
   req <- request(query) |> req_timeout(wait_time)
   perf <- req_perform(req)
@@ -34,7 +31,7 @@ queryTitle <- function(title = NULL,mailto = NULL,wait_time = 5,max_results = 5,
     }
     if(json_response$meta$count > 0){
       json_response$results <- json_response$results[!duplicated(sapply(json_response$results,'[[','id'))]
-      result <- rbindlist(processWorks(json_response$results,data_style = data_style))
+      result <- rbindlist(processWorks(json_response$results,data_style = data_style),use.names = T,fill = T)
       result$query_title = title
       result$query = query
     }
