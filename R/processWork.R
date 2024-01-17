@@ -43,5 +43,5 @@ processWork <- function(work = NULL,data_style = c('bare_bones','citation','comp
 #' @param work a list of works results
 #' @param data_style = c('bare_bones','citation','comprehensive','all')
 #' @export
-processWorks <- Vectorize(processWork,vectorize.args = 'work')
+processWorks <- Vectorize(processWork,vectorize.args = 'work',SIMPLIFY = F,USE.NAMES = T)
 

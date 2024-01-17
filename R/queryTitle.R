@@ -11,7 +11,7 @@
 #' data(titles)
 #' #query a single titles
 #' queryOpenAlex(titles[22])
-#' @import httr
+#' @import httr2
 #' @import jsonlite
 #' @import magrittr
 #' @import data.table
@@ -19,18 +19,22 @@
 #' @export
 #'
 queryTitle <- function(title = NULL,mailto = NULL,wait_time = 5,max_results = 5,url = "https://api.openalex.org/works",data_style = c('bare_bones','citation','comprehensive','all')){
+  title = 'Reduction in Fine Particulate Air Pollution and Mortality'
+  max_results = 5;wait_time = 5;mailto = 'tascott@ucdavis.edu'
+  url = "https://api.openalex.org/works";data_style = 'citation'
   query <- generateTitleQuery(title = title,mailto = mailto,max_results = max_results,url = url)
-  response <- GET(query,timeout(wait_time))#,error = function(e) NULL)
-  code <- status_code(response)
+  req <- request(query) |> req_timeout(wait_time)
+  perf <- req_perform(req)
+  code <- perf$status_code
   if(code != 200){result <- NULL}
   if(code == 200){
-    json_response<-content(response,as="parsed")
+    json_response<-httr2::resp_body_json(perf)
     if(json_response$meta$count == 0){
       result <- data.table(query_title = title,query = query)
     }
     if(json_response$meta$count > 0){
       json_response$results <- json_response$results[!duplicated(sapply(json_response$results,'[[','id'))]
-      result <- processWork(work = json_response$results,data_style = data_style)
+      result <- rbindlist(processWorks(json_response$results,data_style = data_style))
       result$query_title = title
       result$query = query
     }
