@@ -36,17 +36,12 @@ processWork <- function(work = NULL,data_style = c('bare_bones','citation','comp
   if(data_style=='custom'){return(work_dt)}
 }
 
-
-#' Vectorized processing of openalex results
+#' Vectorized processing of work json data
 #'
-#' @description takes json works returned by an openAlex query and returns a 1 by X list of citation information in 1 row x Y column data.tables
-#' @param work one or more openalex works entities
-#' @return a data.table object with one work per row
+#' @description Same function but can take a list of works. Not advisable for large data sets, parallelize queryOpenAlex instead.
+#' @param work a list of works results
+#' @param data_style = c('bare_bones','citation','comprehensive','all')
 #' @export
-#' @importFrom methods is
-#' @import data.table
-#' @param data_style options for how much/how little data to return, see @details
-
-processWorks <- Vectorize(processWork,vectorize.args = 'work',SIMPLIFY = F)
+processWorks <- Vectorize(processWork,vectorize.args = 'work',SIMPLIFY = F,USE.NAMES = T)
 
 

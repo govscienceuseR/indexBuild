@@ -2,7 +2,7 @@
 % Please edit documentation in R/processWork.R
 \name{processWorks}
 \alias{processWorks}
-\title{Vectorized processing of openalex results}
+\title{Vectorized processing of work json data}
 \usage{
 processWorks(
   work = NULL,
@@ -10,13 +10,10 @@ processWorks(
 )
 }
 \arguments{
-\item{work}{one or more openalex works entities}
+\item{work}{a list of works results}
 
-\item{data_style}{options for how much/how little data to return, see @details}
-}
-\value{
-a data.table object with one work per row
+\item{data_style}{= c('bare_bones','citation','comprehensive','all')}
 }
 \description{
-takes json works returned by an openAlex query and returns a 1 by X list of citation information in 1 row x Y column data.tables
+Same function but can take a list of works. Not advisable for large data sets, parallelize queryOpenAlex instead.
 }

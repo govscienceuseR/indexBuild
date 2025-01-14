@@ -10,9 +10,9 @@
 #' @description Primary use of this function is to make a query object for use in openAlex that returns potential matches to a title string
 #' @examples
 #' data(titles)
-#' #query a single titles
+#' #query a single title
 #' queryTitle(titles[22])
-#' @import httr
+#' @import httr2
 #' @import jsonlite
 #' @import magrittr
 #' @import stringr
@@ -23,16 +23,18 @@
 #'
 queryTitle <- function(title = NULL,mailto = NULL,wait_time = 5,max_results = 5,url = "https://api.openalex.org/works",data_style = c('bare_bones','citation','comprehensive','all'),try_reduced_string = TRUE){
   query <- generateTitleQuery(title = title,mailto = mailto,max_results = max_results,url = url)
-  response <- GET(query,timeout(wait_time))#,error = function(e) NULL)
-  reduced = FALSE
-  code <- status_code(response)
+
   ### if bad response, result is NULL
+  req <- request(query) |> req_timeout(wait_time)
+  perf <- req_perform(req)
+  code <- perf$status_code
+
   if(code != 200){result <- NULL}
   ### if code response...
   if(code == 200){
     #### parse content
-    json_response<-content(response,as="parsed")
-    #### is there any matches returned?
+    json_response<-httr2::resp_body_json(perf)
+    #### are there any matches returned?
     if(json_response$meta$count == 0){
       reduced = T
       ### if no matches returned, try removing misspelled words
@@ -41,8 +43,9 @@ queryTitle <- function(title = NULL,mailto = NULL,wait_time = 5,max_results = 5,
       if(length(unspell)>0){
       reduced_title <- str_remove_all(title,paste(unspell,collapse = '|'))
       reduced_query <- generateTitleQuery(title = reduced_title,mailto = mailto,max_results = max_results,url = url)
-      response <- GET(reduced_query,timeout(wait_time))#,error = function(e) NULL)
-      json_response<-content(response,as="parsed")
+      req <- request(query) |> req_timeout(wait_time)
+      perf <- req_perform(req)
+      json_response<-httr2::resp_body_json(perf)
       }
     }
     ### if still no matches, give up
@@ -52,8 +55,8 @@ queryTitle <- function(title = NULL,mailto = NULL,wait_time = 5,max_results = 5,
     if(json_response$meta$count > 0){
       json_response$results <- json_response$results[!duplicated(sapply(json_response$results,'[[','id'))]
       if(json_response$meta$count==1)
-      {result <- processWork(work = json_response$results,data_style = 'citation')}else{
-        result <- rbindlist(processWorks(work = json_response$results,data_style = 'citation'),use.names = T,fill = T)
+      {result <- processWork(work = json_response$results,data_style = data_style)}else{
+        result <- rbindlist(processWorks(work = json_response$results,data_style = data_style),use.names = T,fill = T)
       }
       result$query_title = title
       result$query = query
