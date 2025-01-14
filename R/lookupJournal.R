@@ -8,7 +8,7 @@
 #' @importFrom stringr str_replace_all
 #' @importFrom httr parse_url build_url
 
-lookupJournal <- function(issn = NULL,mailto = NULL,type = NULL){
+lookupJournal <- function(issn = NULL,mailto = NULL){
   ### takes the form: https://api.openalex.org/sources/issn:2041-1723
   journal_base <- 'https://api.openalex.org/sources'
   url <- parse_url(journal_base)

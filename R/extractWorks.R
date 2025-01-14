@@ -18,9 +18,7 @@
 #' @param source_page (optional) openAlex webpage for the source
 #' @param override override 1M query result limit?
 #' @param batch_size how large to chunk up into subfiles?, defaults to 50e3
-#' @param subdivision numeric value, defaults to 100k. If number returned is over this value, saves subsets of this return in 50k increments as `[ID]_[increment].rds`
 #' @param parallel defaults to 1, sets cluster value in pblapply for processing works in parallel. may provide speed-ups for large lists.
-#' @param exit_if_over integer value -- abort if you find more than this number of works
 #' @description Primary use is to extract works associated with a given journal (source) or concept. Because the OpenAlex API limits returns to 200, this function iterates to grab all works returned by the query. Each return is a list or 200 works, to which the processWork() function is applied to iteratively develop a flat file.
 #' @details Note that because extracted records can be pretty large--and are complicated, nested json file--there is an optional "data_style" command that lets the user specify what to return. Currently there are three options: (1) bare_bones returns OpenAlex ID + DOI, basically, results that can be used to look up the work again; (2) citation returns typical citation information, like journal name, author, etc., with a couple bonus items like source.id to link back to openAlex (3) comprehensive returns author institutional affiliations, open access info, funding data, etc.; and (4) all returns the entire result in original json format.
 #' @export
@@ -35,14 +33,14 @@ extractWorks <- function(data_style = c('bare_bones','citation','comprehensive',
                          dest_file = NULL,override = 1e6,batch_size = 50e3,
                          mailto = NULL,concept_id = NULL,
                          concept_page = NULL,source_id = NULL,
-                         source_page = NULL,cursor = T,per_page = NULL,
+                         source_page = NULL,cursor = TRUE,per_page = NULL,
                          to_date = NULL,from_date = NULL,keep_paratext = FALSE,
                          debug = FALSE,sleep_time = 0.1,parallel = 1,
-                         return_to_workspace = T){
+                         return_to_workspace = TRUE){
   if(missing(concept_id)&!missing(concept_page)){concept_id <- stringr::str_extract(concept_page,'[A-Za-z0-9]+$')}
   if(missing(source_id)&!missing(source_page)){source_id <- stringr::str_extract(source_page,'[A-Za-z0-9]+$')}
   if(missing(source_id)&missing(concept_id)){stop("Must specify a concept and/or a source to query (using page or id)")}
-  if(missing(dest_file)&return_to_workspace==F){stop("Must specify a file destination to save the result or set return = T")}
+  if(missing(dest_file)&return_to_workspace==FALSE){stop("Must specify a file destination to save the result or set return = T")}
   works_base <- 'https://api.openalex.org/works'
   url <- parse_url(works_base)
   if(!is.null(mailto)){
@@ -94,7 +92,7 @@ extractWorks <- function(data_style = c('bare_bones','citation','comprehensive',
     }
     store_results <- append(store_results,js$results)
     if(length(store_results)>=batch_size){
-      print(paste('processing',length(store_results),'works from',jid))
+      print(paste('processing',length(store_results),'works from',if(missing(source_id)){concept_id}else{source_id}))
       processed_list <- pblapply(store_results,processWork,data_style = data_style,cl = parallel)
       processed_dt <- rbindlist(processed_list,use.names = T,fill = T)
       saveRDS(object = processed_dt, file = stringr::str_replace(dest_file,'\\.rds$',paste0('_',iterfile,'.rds')))

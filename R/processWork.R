@@ -36,7 +36,6 @@ processWork <- function(work = NULL,data_style = c('bare_bones','citation','comp
   if(data_style=='custom'){return(work_dt)}
 }
 
-
 #' Vectorized processing of work json data
 #'
 #' @description Same function but can take a list of works. Not advisable for large data sets, parallelize queryOpenAlex instead.
@@ -44,4 +43,5 @@ processWork <- function(work = NULL,data_style = c('bare_bones','citation','comp
 #' @param data_style = c('bare_bones','citation','comprehensive','all')
 #' @export
 processWorks <- Vectorize(processWork,vectorize.args = 'work',SIMPLIFY = F,USE.NAMES = T)
+
 

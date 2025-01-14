@@ -10,11 +10,12 @@ queryTitles(
   wait_time = 5,
   max_results = 5,
   url = "https://api.openalex.org/works",
-  data_style = c("bare_bones", "citation", "comprehensive", "all")
+  data_style = c("bare_bones", "citation", "comprehensive", "all"),
+  try_reduced_string = TRUE
 )
 }
 \arguments{
-\item{title}{a vector of title strings https://docs.openalex.org/api}
+\item{title}{a vector of title strings}
 
 \item{mailto}{email address of user, needed to get in 'polite pool' of API}
 
@@ -23,6 +24,10 @@ queryTitles(
 \item{max_results}{how many results to return (uses "per_page" feature on OA to grab first page of results)}
 
 \item{url}{the base url for openAlex query}
+
+\item{data_style}{options for processWork() --> how much/how little data to grab from json list, see @details}
+
+\item{try_reduced_string}{option to try removing words FAILED by hunspell package if nothing found in main query}
 }
 \description{
 Same function but can take a set of titles. Not advisable for large data sets, parallelize queryOpenAlex instead.

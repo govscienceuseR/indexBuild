@@ -10,11 +10,12 @@ queryTitle(
   wait_time = 5,
   max_results = 5,
   url = "https://api.openalex.org/works",
-  data_style = c("bare_bones", "citation", "comprehensive", "all")
+  data_style = c("bare_bones", "citation", "comprehensive", "all"),
+  try_reduced_string = TRUE
 )
 }
 \arguments{
-\item{title}{a string name for title https://docs.openalex.org/api}
+\item{title}{a string name for title}
 
 \item{mailto}{email address of user, needed to get in 'polite pool' of API}
 
@@ -25,6 +26,8 @@ queryTitle(
 \item{url}{the base url for openAlex query}
 
 \item{data_style}{options for processWork() --> how much/how little data to grab from json list, see @details}
+
+\item{try_reduced_string}{option to try removing words FAILED by hunspell package if nothing found in main query}
 }
 \description{
 Primary use of this function is to make a query object for use in openAlex that returns potential matches to a title string
@@ -34,6 +37,6 @@ Note that because extracted records can be pretty large--and are complicated, ne
 }
 \examples{
 data(titles)
-#query a single titles
-queryOpenAlex(titles[22])
+#query a single title
+queryTitle(titles[22])
 }

@@ -16,7 +16,7 @@ Description: The referenceSearch tool from govscienceuseR needs two basic inputs
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 Imports: 
     magrittr,
     jsonlite,
@@ -24,6 +24,8 @@ Imports:
     httr,
     data.table,
     purrr,
+    pbapply,
+    hunspell,
     methods
 Suggests: 
     rmarkdown,
