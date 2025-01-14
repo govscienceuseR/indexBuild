@@ -4,7 +4,7 @@
 \alias{lookupJournal}
 \title{Find a journal in openAlex using issn code}
 \usage{
-lookupJournal(issn = NULL, mailto = NULL, type = NULL)
+lookupJournal(issn = NULL, mailto = NULL)
 }
 \arguments{
 \item{issn}{a string issn value (see https://docs.openalex.org/api-entities/sources/get-a-single-source)}

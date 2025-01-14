@@ -14,7 +14,7 @@ extractWorks(
   concept_page = NULL,
   source_id = NULL,
   source_page = NULL,
-  cursor = T,
+  cursor = TRUE,
   per_page = NULL,
   to_date = NULL,
   from_date = NULL,
@@ -22,7 +22,7 @@ extractWorks(
   debug = FALSE,
   sleep_time = 0.1,
   parallel = 1,
-  return_to_workspace = T
+  return_to_workspace = TRUE
 )
 }
 \arguments{
@@ -61,10 +61,6 @@ extractWorks(
 \item{parallel}{defaults to 1, sets cluster value in pblapply for processing works in parallel. may provide speed-ups for large lists.}
 
 \item{return_to_workspace}{boolean for whether final result should be returned as workspace object}
-
-\item{subdivision}{numeric value, defaults to 100k. If number returned is over this value, saves subsets of this return in 50k increments as \verb{[ID]_[increment].rds}}
-
-\item{exit_if_over}{integer value -- abort if you find more than this number of works}
 }
 \description{
 Primary use is to extract works associated with a given journal (source) or concept. Because the OpenAlex API limits returns to 200, this function iterates to grab all works returned by the query. Each return is a list or 200 works, to which the processWork() function is applied to iteratively develop a flat file.
@@ -75,10 +71,10 @@ Note that because extracted records can be pretty large--and are complicated, ne
 \examples{
 # concept usage of extractWorks()
 id <- queryConcepts('public administration')
-extractWorks(concept_id = id$id,from_date = 2020,to_date = 2021,cursor = F,data_style = 'citation',per_page = 10)
+extractWorks(concept_id = id$id,from_date = 2020,to_date = 2021,cursor = FALSE,data_style = 'citation',per_page = 10)
 # journal (source) usage of extractWorks()
 id <- querySources(source = 'Journal of Public Administration Research and Theory')
-extractWorks(source_id =id$results[[1]]$id,cursor = F,data_style = 'citation',per_page = 10)
+extractWorks(source_id =id$results[[1]]$id,cursor = FALSE,data_style = 'citation',per_page = 10)
 
 
 }

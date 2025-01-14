@@ -12,7 +12,7 @@ generateTitleQuery(
 )
 }
 \arguments{
-\item{title}{a string name for title https://docs.openalex.org/api}
+\item{title}{a string name for title}
 
 \item{mailto}{email address of user, needed to get in 'polite pool' of API}
 
