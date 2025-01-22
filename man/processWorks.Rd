@@ -4,10 +4,7 @@
 \alias{processWorks}
 \title{Vectorized processing of work json data}
 \usage{
-processWorks(
-  work = NULL,
-  data_style = c("bare_bones", "citation", "comprehensive", "all")
-)
+processWorks(work = NULL, data_style = c("citation"))
 }
 \arguments{
 \item{work}{a list of works results}

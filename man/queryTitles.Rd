@@ -10,7 +10,7 @@ queryTitles(
   wait_time = 5,
   max_results = 5,
   url = "https://api.openalex.org/works",
-  data_style = c("bare_bones", "citation", "comprehensive", "all"),
+  data_style = c("citation"),
   try_reduced_string = TRUE
 )
 }

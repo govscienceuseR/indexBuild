@@ -9,14 +9,14 @@
 #' @param data_style options for how much/how little data to return, see @details
 #' @details Note that because extracted records can be pretty large--and are complicated, nested json file--there is an optional "data_style" command that lets the user specify what to return. Currently there are three options: (1) bare_bones returns OpenAlex ID + DOI, basically, results that can be used to look up the work again; (2) citation returns typical citation information, like journal name, author, etc., with a couple bonus items like source.id to link back to openAlex (3) comprehensive returns author institutional affiliations, open access info, funding data, etc.; and (4) all returns the entire result in original json format.
 
-processWork <- function(work = NULL,data_style = c('bare_bones','citation','comprehensive','all')){
+processWork <- function(work = NULL,data_style = c('citation')){
   dt <- data.table()
   bare_bones <- c('id','doi')
   citation <- c(bare_bones,'author.display_name','publication_year','display_name','source.display_name','source.id','volume','issue','first_page','last_page')
-  custom <- c(citation,'is_oa','source.is_oa','author.institutions.id','author.institutions.type','author.institutions.country_code','type','cited_by_count','grants.funder.id','grants.funder_display_name','source.issn_l')
+  comprehensive <- c(citation,'is_oa','source.is_oa','author.institutions.id','author.institutions.type','author.institutions.country_code','type','cited_by_count','grants.funder.id','grants.funder_display_name','source.issn_l')
   all <- NULL
-  if(data_style == 'all'){stop('returning all data as flat file currently not supported, please select another style')}
-  if(data_style == 'bare_bones'){return(as.data.table(work[c('id','doi')]))}
+  if(data_style=='all'){stop('returning all data as flat file currently not supported, please select another style')}
+  if(data_style=='bare_bones'){return(as.data.table(work[c('id','doi')]))}
   if(data_style!='bare_bones'){
     base_info <- as.data.table(work[c('id','doi','title','publication_year','type','cited_by_count')])
     bib_info <- as.data.table(work$biblio)
@@ -33,7 +33,7 @@ processWork <- function(work = NULL,data_style = c('bare_bones','citation','comp
   }
   citation_returns <- c('author_display_name','publication_year','title','source.display_name','bib_info','doi')
   if(data_style=='citation'){return(work_dt[,colnames(work_dt) %in% citation_returns,with = F])}
-  if(data_style=='custom'){return(work_dt)}
+  if(data_style=='comprehensive'){return(work_dt)}
 }
 
 #' Vectorized processing of work json data

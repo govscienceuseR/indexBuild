@@ -21,14 +21,13 @@
 #' @details Note that because extracted records can be pretty large--and are complicated, nested json file--there is an optional "data_style" command that lets the user specify what to return. Currently there are three options: (1) bare_bones returns OpenAlex ID + DOI, basically, results that can be used to look up the work again; (2) citation returns typical citation information, like journal name, author, etc., with a couple bonus items like source.id to link back to openAlex (3) comprehensive returns author institutional affiliations, open access info, funding data, etc.; and (4) [not active] all returns the entire result in original json format.
 #' @export
 #'
-queryTitle <- function(title = NULL,mailto = NULL,wait_time = 5,max_results = 5,url = "https://api.openalex.org/works",data_style = c('bare_bones','citation','comprehensive','all'),try_reduced_string = TRUE){
+queryTitle <- function(title = NULL,mailto = NULL,wait_time = 5,max_results = 5,url = "https://api.openalex.org/works",data_style = c('citation'),try_reduced_string = TRUE){
   query <- generateTitleQuery(title = title,mailto = mailto,max_results = max_results,url = url)
-
   ### if bad response, result is NULL
   req <- request(query) |> req_timeout(wait_time)
   perf <- req_perform(req)
   code <- perf$status_code
-
+  reduced <- FALSE
   if(code != 200){result <- NULL}
   ### if code response...
   if(code == 200){
@@ -36,14 +35,14 @@ queryTitle <- function(title = NULL,mailto = NULL,wait_time = 5,max_results = 5,
     json_response<-httr2::resp_body_json(perf)
     #### are there any matches returned?
     if(json_response$meta$count == 0){
-      reduced = T
+      reduced <- TRUE
       ### if no matches returned, try removing misspelled words
       ### note: this also loses a lot of special science words, so really only works if you are diligent with matching scores later on
       unspell <- unlist(hunspell(title))
       if(length(unspell)>0){
       reduced_title <- str_remove_all(title,paste(unspell,collapse = '|'))
       reduced_query <- generateTitleQuery(title = reduced_title,mailto = mailto,max_results = max_results,url = url)
-      req <- request(query) |> req_timeout(wait_time)
+      req <- request(reduced_query) |> req_timeout(wait_time)
       perf <- req_perform(req)
       json_response<-httr2::resp_body_json(perf)
       }
@@ -88,13 +87,14 @@ queryTitles <- Vectorize(queryTitle,vectorize.args = 'title',SIMPLIFY = F)
 #' @param url the base url for openAlex query
 #' @description Primary use of this function is to make a query url for openAlex
 #' @import httr
+#' @import httr2
 #' @export
 generateTitleQuery = function(title = NULL,mailto = NULL,max_results = 5,url = "https://api.openalex.org/works"){
   ### note, results are automatically sorted by relevance so return is best matches ###
-  url <- parse_url(url)
+  url <- url_parse(url)
   url$query <- list(mailto = mailto,search = title,per_page = max_results,sort = 'relevance_score:desc')
   url$scheme <- "https"
-  url <- build_url(url)
+  url <- url_build(url)
   return(url)
 }
 #generateTitleQuery <- Vectorize(generateTitleQuery, vectorize.args = "title")
