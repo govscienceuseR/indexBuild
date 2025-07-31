@@ -25,7 +25,18 @@ queryTitle <- function(title = NULL,mailto = NULL,wait_time = 5,max_results = 5,
   query <- generateTitleQuery(title = title,mailto = mailto,max_results = max_results,url = url)
   ### if bad response, result is NULL
   req <- request(query) |> req_timeout(wait_time)
-  perf <- req_perform(req)
+  perf <- tryCatch({
+    req_perform(req)
+  }, error = function(e) {
+    result <- data.table(query_title = title, query = query, error_code = NA, error_message = as.character(e$message))
+    return(result)
+  })
+  
+  # If tryCatch returned our error data.table, return it immediately
+  if(is.data.table(perf)) {
+    return(perf)
+  }
+  
   code <- perf$status_code
   reduced <- FALSE
   if(code != 200){
@@ -49,7 +60,18 @@ queryTitle <- function(title = NULL,mailto = NULL,wait_time = 5,max_results = 5,
       reduced_title <- str_replace_all(reduced_title,'^\\s','')
       reduced_query <- generateTitleQuery(title = reduced_title,mailto = mailto,max_results = max_results,url = url)
       req <- request(reduced_query) |> req_timeout(wait_time)
-      perf <- req_perform(req)
+      perf <- tryCatch({
+        req_perform(req)
+      }, error = function(e) {
+        result <- data.table(query_title = title, query = reduced_query, error_code = NA, error_message = as.character(e$message), reduced = TRUE)
+        return(result)
+      })
+      
+      # If tryCatch returned our error data.table, return it immediately
+      if(is.data.table(perf)) {
+        return(perf)
+      }
+      
       if(perf$status_code != 200){
         error_msg <- httr2::resp_status_desc(perf)
         result <- data.table(query_title = title, query = reduced_query, error_code = perf$status_code, error_message = error_msg, reduced = TRUE)
