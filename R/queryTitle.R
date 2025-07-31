@@ -41,6 +41,8 @@ queryTitle <- function(title = NULL,mailto = NULL,wait_time = 5,max_results = 5,
       unspell <- unlist(hunspell(title))
       if(length(unspell)>0){
       reduced_title <- str_remove_all(title,paste(unspell,collapse = '|'))
+      reduced_title <- str_replace_all(reduced_title,'\\s{2,}',' ')
+      reduced_title <- str_replace_all(reduced_title,'^\\s','')
       reduced_query <- generateTitleQuery(title = reduced_title,mailto = mailto,max_results = max_results,url = url)
       req <- request(reduced_query) |> req_timeout(wait_time)
       perf <- req_perform(req)
