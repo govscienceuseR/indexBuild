@@ -22,7 +22,7 @@ queryConcepts <- function(concept_string = NULL,maxlevel = 10,per_page = 10,mail
   if(!is.null(per_page)){purl$query$`per-page`<-per_page}
   if(!is.null(maxlevel)){purl$query$filter <- paste0(purl$query$filter,',level:<',maxlevel+1)}
   url <- build_url(purl)
-  jresult <- read_json(url)
+  jresult <- readOA(url)
   dt <- rbindlist(lapply(jresult$results,function(x) as.data.table(x[variables])),fill = T,use.names = T)
   return(dt)
 }

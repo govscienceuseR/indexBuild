@@ -24,9 +24,11 @@
 queryTitle <- function(title = NULL,mailto = NULL,wait_time = 5,max_results = 5,url = "https://api.openalex.org/works",data_style = c('citation'),try_reduced_string = TRUE){
   query <- generateTitleQuery(title = title,mailto = mailto,max_results = max_results,url = url)
   ### if bad response, result is NULL
-  req <- request(query) |> req_timeout(wait_time)
+  ### performOA() throttles to the polite pool and retries 429/5xx with backoff,
+  ### so a transient rate-limit hit is resolved here rather than baked into an
+  ### error row; only a persistent failure or timeout falls through to tryCatch.
   perf <- tryCatch({
-    req_perform(req)
+    performOA(query, wait_time = wait_time)
   }, error = function(e) {
     result <- data.table(query_title = title, query = query, error_code = NA, error_message = as.character(e$message))
     return(result)
@@ -59,9 +61,8 @@ queryTitle <- function(title = NULL,mailto = NULL,wait_time = 5,max_results = 5,
       reduced_title <- str_replace_all(reduced_title,'\\s{2,}',' ')
       reduced_title <- str_replace_all(reduced_title,'^\\s','')
       reduced_query <- generateTitleQuery(title = reduced_title,mailto = mailto,max_results = max_results,url = url)
-      req <- request(reduced_query) |> req_timeout(wait_time)
       perf <- tryCatch({
-        req_perform(req)
+        performOA(reduced_query, wait_time = wait_time)
       }, error = function(e) {
         result <- data.table(query_title = title, query = reduced_query, error_code = NA, error_message = as.character(e$message), reduced = TRUE)
         return(result)

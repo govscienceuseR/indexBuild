@@ -20,5 +20,5 @@ querySources <- function(source = NULL,mailto = NULL,type = NULL){
   #if(length(url$query$filter)>1){url$query$filter<-paste(url$query$filter,collapse = '&')}
   qurl <- build_url(url)
   qurl <- str_replace_all(qurl,'filter[1-2]','filter')
-  return(jsonlite::read_json(qurl))
+  return(readOA(qurl))
 }

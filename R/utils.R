@@ -1,3 +1,54 @@
+#' Perform an OpenAlex GET with polite-pool throttling and retry/backoff
+#'
+#' Shared request wrapper for every OpenAlex call in the package. It caps the
+#' request rate below the polite-pool ceiling (10 req/s) with a shared token
+#' bucket, and retries transient failures (HTTP 429 and 5xx) with exponential
+#' backoff, honoring the server's Retry-After header. Routing all GETs through
+#' here is what keeps bursty split/apply query loops from tripping 429 errors.
+#'
+#' Because the throttle realm is keyed on the OpenAlex host, the rate limit is
+#' shared across all callers in the same R process (titles, sources, concepts,
+#' host-org lookups), so parallel or interleaved queries still stay under cap.
+#'
+#' @param url a fully-formed request URL string
+#' @param wait_time per-request timeout in seconds
+#' @param max_tries maximum attempts per request before giving up
+#' @param rate_capacity token-bucket size (max burst) for the throttle
+#' @param fill_time_s seconds to refill the full bucket (rate = capacity / fill_time_s)
+#' @return an httr2 response object. Non-2xx responses are returned (not thrown)
+#'   after retries are exhausted, so callers can inspect \code{status_code};
+#'   only transport-level failures (timeouts, DNS) raise an error.
+#' @export
+#' @import httr2
+performOA <- function(url, wait_time = 5, max_tries = 5, rate_capacity = 8, fill_time_s = 1){
+  request(url) |>
+    req_timeout(wait_time) |>
+    req_throttle(capacity = rate_capacity, fill_time_s = fill_time_s,
+                 realm = "https://api.openalex.org") |>
+    req_retry(max_tries = max_tries,
+              is_transient = function(resp) resp_status(resp) %in% c(429, 500, 502, 503, 504),
+              backoff = function(tries) 2^tries) |>
+    req_error(is_error = function(resp) FALSE) |>
+    req_perform()
+}
+
+#' Perform an OpenAlex GET and return the parsed JSON body
+#'
+#' Convenience wrapper around \code{\link{performOA}} that returns the decoded
+#' JSON list, a throttled/retrying drop-in replacement for
+#' \code{jsonlite::read_json(url)} against the OpenAlex API.
+#'
+#' @param url a fully-formed request URL string
+#' @param wait_time per-request timeout in seconds
+#' @param max_tries maximum attempts per request before giving up
+#' @return the parsed JSON response as a list
+#' @export
+#' @import httr2
+readOA <- function(url, wait_time = 5, max_tries = 5){
+  resp <- performOA(url, wait_time = wait_time, max_tries = max_tries)
+  resp_body_json(resp)
+}
+
 #' simple wrapper to combine stream_in and gzfile to read json.gz OA files
 #'
 #' This function just combines two existing functions. Stream_in is preferred over normal read functions because the files are very large.
