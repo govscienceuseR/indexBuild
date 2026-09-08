@@ -23,7 +23,11 @@ processWork <- function(work = NULL,data_style = c('citation')){
     open_access <- data.table(is_oa = work$open_access$is_oa,oa_status = work$open_access$oa_status)
     source_info <- parseLocationObject(work)
     author_table <- parseAuthorsObject(work)
-    if(nrow(author_table)>0){author_table$author_id <- basename(author_table$author_id)}
+    ### Some works return authorships with a display_name but no author.id key
+    ### (group/anonymous authors), so the author_id column can be absent (NULL) or
+    ### a list; coerce to character and skip when absent so basename() never sees
+    ### a non-character argument.
+    if(nrow(author_table)>0 && !is.null(author_table$author_id)){author_table$author_id <- basename(as.character(author_table$author_id))}
     author_collapse <- author_table[,lapply(.SD,paste,collapse = ';'),.SDcols = names(author_table)]
     author_collapse$n_authors <- nrow(author_table)
     grant_table <- parseGrantsObject(work)
