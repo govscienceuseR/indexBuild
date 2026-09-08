@@ -10,26 +10,43 @@
 #' shared across all callers in the same R process (titles, sources, concepts,
 #' host-org lookups), so parallel or interleaved queries still stay under cap.
 #'
+#' An OpenAlex API key can be supplied two ways: pass it explicitly via the
+#' \code{api_key} argument, or set the \code{OPENALEX_API_KEY} environment
+#' variable (the default fallback). Either way the key is sent as an
+#' \code{Authorization: Bearer} header (not a query param), so it never appears
+#' in the request URL that callers store alongside results. This raises the
+#' account's free daily allowance and enables paid usage tracking. OpenAlex has
+#' announced a transition to API keys; the \code{mailto} polite pool still works
+#' today, so a key is optional.
+#'
 #' @param url a fully-formed request URL string
 #' @param wait_time per-request timeout in seconds
 #' @param max_tries maximum attempts per request before giving up
 #' @param rate_capacity token-bucket size (max burst) for the throttle
 #' @param fill_time_s seconds to refill the full bucket (rate = capacity / fill_time_s)
+#' @param api_key optional OpenAlex API key string; when NULL, falls back to the \code{OPENALEX_API_KEY} environment variable
 #' @return an httr2 response object. Non-2xx responses are returned (not thrown)
 #'   after retries are exhausted, so callers can inspect \code{status_code};
 #'   only transport-level failures (timeouts, DNS) raise an error.
 #' @export
 #' @import httr2
-performOA <- function(url, wait_time = 5, max_tries = 5, rate_capacity = 8, fill_time_s = 1){
-  request(url) |>
+performOA <- function(url, wait_time = 5, max_tries = 5, rate_capacity = 8, fill_time_s = 1, api_key = NULL){
+  req <- request(url) |>
     req_timeout(wait_time) |>
     req_throttle(capacity = rate_capacity, fill_time_s = fill_time_s,
                  realm = "https://api.openalex.org") |>
     req_retry(max_tries = max_tries,
               is_transient = function(resp) resp_status(resp) %in% c(429, 500, 502, 503, 504),
               backoff = function(tries) 2^tries) |>
-    req_error(is_error = function(resp) FALSE) |>
-    req_perform()
+    req_error(is_error = function(resp) FALSE)
+  ### send the API key as a bearer header when available, keeping it out of the
+  ### URL (and therefore out of any query string stored with results). An
+  ### explicit api_key argument wins; otherwise fall back to the env var.
+  key <- if(!is.null(api_key)) api_key else Sys.getenv("OPENALEX_API_KEY")
+  if(nzchar(key)){
+    req <- req_headers(req, Authorization = paste("Bearer", key))
+  }
+  req_perform(req)
 }
 
 #' Perform an OpenAlex GET and return the parsed JSON body
@@ -41,11 +58,12 @@ performOA <- function(url, wait_time = 5, max_tries = 5, rate_capacity = 8, fill
 #' @param url a fully-formed request URL string
 #' @param wait_time per-request timeout in seconds
 #' @param max_tries maximum attempts per request before giving up
+#' @param api_key optional OpenAlex API key string, passed to \code{\link{performOA}}; when NULL, falls back to the \code{OPENALEX_API_KEY} environment variable
 #' @return the parsed JSON response as a list
 #' @export
 #' @import httr2
-readOA <- function(url, wait_time = 5, max_tries = 5){
-  resp <- performOA(url, wait_time = wait_time, max_tries = max_tries)
+readOA <- function(url, wait_time = 5, max_tries = 5, api_key = NULL){
+  resp <- performOA(url, wait_time = wait_time, max_tries = max_tries, api_key = api_key)
   resp_body_json(resp)
 }
 
@@ -143,20 +161,28 @@ parseAuthorsObject <- function(work = NULL){
 
 
 
-#' openAlex stores information about a work's funding as a list nested in the larger works object. This function takes the works object and returns a flatted version of the location object which can be "cbinded" with the works object.
+#' openAlex stores information about a work's funding as a list nested in the larger works object. This function takes the works object and returns a flatted version of the funding object which can be "cbinded" with the works object.
+#'
+#' @details OpenAlex removed the legacy \code{grants} property; funding is now
+#'   carried in \code{awards} (award-level detail) and \code{funders}
+#'   (funder-level detail). This function reads \code{awards} and maps it back to
+#'   the legacy grant columns (\code{funder}, \code{funder_display_name},
+#'   \code{award_id}) so downstream extracts keep the same shape. \code{awards}
+#'   fields used: \code{funder_id}, \code{funder_display_name},
+#'   \code{funder_award_id}.
 #' @param work an openAlex works object
-#' @return a flattened data.table of funding info
+#' @return a flattened data.table of funding info (empty if the work has no awards)
 #' @export
 parseGrantsObject <- function(work = NULL){
   if(missing(work)){stop('please provide an openAlex works object')}
-  # which grant info items to keep
-  grant_keep <- c('funder','funder_display_name','award_id')
-  #### flatten twice to collapse two levels
-  grant_dt_list <- lapply(work$grants,function(x){
-    flat_grant <- purrr::list_flatten(purrr::list_flatten(x))
-    grant_flat <- as.data.table(flat_grant[names(flat_grant) %in% grant_keep])
-    grant_flat})
-  if(length(work$grants)==1){grant_dt <- grant_dt_list[[1]]}else{grant_dt <- rbindlist(grant_dt_list,use.names = T,fill = T)}
+  awards <- work$awards
+  if(is.null(awards) || length(awards)==0){return(data.table())}
+  grant_dt_list <- lapply(awards,function(x){
+    data.table(funder = if(is.null(x$funder_id)) NA_character_ else x$funder_id,
+               funder_display_name = if(is.null(x$funder_display_name)) NA_character_ else x$funder_display_name,
+               award_id = if(is.null(x$funder_award_id)) NA_character_ else x$funder_award_id)
+  })
+  grant_dt <- rbindlist(grant_dt_list,use.names = T,fill = T)
   return(grant_dt)
 }
 

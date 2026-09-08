@@ -7,6 +7,7 @@
 #' @param url the base url for openAlex query
 #' @param data_style options for processWork() --> how much/how little data to grab from json list, see @details
 #' @param try_reduced_string option to try removing words FAILED by hunspell package if nothing found in main query
+#' @param api_key optional OpenAlex API key; if NULL the \code{OPENALEX_API_KEY} environment variable is used (see \code{\link{performOA}})
 #' @description Primary use of this function is to make a query object for use in openAlex that returns potential matches to a title string
 #' @examples
 #' data(titles)
@@ -21,14 +22,14 @@
 #' @details Note that because extracted records can be pretty large--and are complicated, nested json file--there is an optional "data_style" command that lets the user specify what to return. Currently there are three options: (1) bare_bones returns OpenAlex ID + DOI, basically, results that can be used to look up the work again; (2) citation returns typical citation information, like journal name, author, etc., with a couple bonus items like source.id to link back to openAlex (3) comprehensive returns author institutional affiliations, open access info, funding data, etc.; and (4) [not active] all returns the entire result in original json format.
 #' @export
 #'
-queryTitle <- function(title = NULL,mailto = NULL,wait_time = 5,max_results = 5,url = "https://api.openalex.org/works",data_style = c('citation'),try_reduced_string = TRUE){
+queryTitle <- function(title = NULL,mailto = NULL,wait_time = 5,max_results = 5,url = "https://api.openalex.org/works",data_style = c('citation'),try_reduced_string = TRUE,api_key = NULL){
   query <- generateTitleQuery(title = title,mailto = mailto,max_results = max_results,url = url)
   ### if bad response, result is NULL
   ### performOA() throttles to the polite pool and retries 429/5xx with backoff,
   ### so a transient rate-limit hit is resolved here rather than baked into an
   ### error row; only a persistent failure or timeout falls through to tryCatch.
   perf <- tryCatch({
-    performOA(query, wait_time = wait_time)
+    performOA(query, wait_time = wait_time, api_key = api_key)
   }, error = function(e) {
     result <- data.table(query_title = title, query = query, error_code = NA, error_message = as.character(e$message))
     return(result)
@@ -62,7 +63,7 @@ queryTitle <- function(title = NULL,mailto = NULL,wait_time = 5,max_results = 5,
       reduced_title <- str_replace_all(reduced_title,'^\\s','')
       reduced_query <- generateTitleQuery(title = reduced_title,mailto = mailto,max_results = max_results,url = url)
       perf <- tryCatch({
-        performOA(reduced_query, wait_time = wait_time)
+        performOA(reduced_query, wait_time = wait_time, api_key = api_key)
       }, error = function(e) {
         result <- data.table(query_title = title, query = reduced_query, error_code = NA, error_message = as.character(e$message), reduced = TRUE)
         return(result)
@@ -109,6 +110,7 @@ queryTitle <- function(title = NULL,mailto = NULL,wait_time = 5,max_results = 5,
 #' @param url the base url for openAlex query
 #' @param data_style options for processWork() --> how much/how little data to grab from json list, see @details
 #' @param try_reduced_string option to try removing words FAILED by hunspell package if nothing found in main query
+#' @param api_key optional OpenAlex API key; if NULL the \code{OPENALEX_API_KEY} environment variable is used (see \code{\link{performOA}})
 #' @export
 queryTitles <- Vectorize(queryTitle,vectorize.args = 'title',SIMPLIFY = F)
 

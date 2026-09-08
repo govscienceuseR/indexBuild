@@ -4,7 +4,7 @@
 \alias{readOA}
 \title{Perform an OpenAlex GET and return the parsed JSON body}
 \usage{
-readOA(url, wait_time = 5, max_tries = 5)
+readOA(url, wait_time = 5, max_tries = 5, api_key = NULL)
 }
 \arguments{
 \item{url}{a fully-formed request URL string}
@@ -12,6 +12,8 @@ readOA(url, wait_time = 5, max_tries = 5)
 \item{wait_time}{per-request timeout in seconds}
 
 \item{max_tries}{maximum attempts per request before giving up}
+
+\item{api_key}{optional OpenAlex API key string, passed to \code{\link{performOA}}; when NULL, falls back to the \code{OPENALEX_API_KEY} environment variable}
 }
 \value{
 the parsed JSON response as a list

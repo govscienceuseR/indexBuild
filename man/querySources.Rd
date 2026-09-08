@@ -4,7 +4,7 @@
 \alias{querySources}
 \title{Find sources (journals) and source ids for use in openAlex}
 \usage{
-querySources(source = NULL, mailto = NULL, type = NULL)
+querySources(source = NULL, mailto = NULL, type = NULL, api_key = NULL)
 }
 \arguments{
 \item{source}{a string source name https://docs.openalex.org/api}
@@ -12,6 +12,8 @@ querySources(source = NULL, mailto = NULL, type = NULL)
 \item{mailto}{email address of user, needed to get in 'polite pool' of API}
 
 \item{type}{which type of source should be included in query, defaults to all}
+
+\item{api_key}{optional OpenAlex API key; if NULL the \code{OPENALEX_API_KEY} environment variable is used (see \code{\link{performOA}})}
 }
 \description{
 Primary use of this function is to get source ID for use in API

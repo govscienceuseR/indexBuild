@@ -13,7 +13,7 @@ processWork <- function(work = NULL,data_style = c('citation')){
   dt <- data.table()
   bare_bones <- c('id','doi')
   citation <- c(bare_bones,'author.display_name','publication_year','display_name','source.display_name','source.id','volume','issue','first_page','last_page')
-  comprehensive <- c(citation,'is_oa','source.is_oa','author.institutions.id','author.institutions.type','author.institutions.country_code','type','cited_by_count','grants.funder.id','grants.funder_display_name','source.issn_l')
+  comprehensive <- c(citation,'is_oa','source.is_oa','author.institutions.id','author.institutions.type','author.institutions.country_code','type','cited_by_count','funder','funder_display_name','award_id','source.issn_l')
   all <- NULL
   if(data_style=='all'){stop('returning all data as flat file currently not supported, please select another style')}
   if(data_style=='bare_bones'){return(as.data.table(work[c('id','doi')]))}

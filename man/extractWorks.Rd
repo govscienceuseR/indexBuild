@@ -9,7 +9,11 @@ extractWorks(
   dest_file = NULL,
   override = 1e+06,
   batch_size = 50000,
+  credit_floor = 0,
   mailto = NULL,
+  api_key = NULL,
+  topic_id = NULL,
+  topic_page = NULL,
   concept_id = NULL,
   concept_page = NULL,
   source_id = NULL,
@@ -34,11 +38,19 @@ extractWorks(
 
 \item{batch_size}{how large to chunk up into subfiles?, defaults to 50e3}
 
+\item{credit_floor}{stop the crawl cleanly (flushing partial results) once the OpenAlex \code{X-RateLimit-Remaining} header drops below this value, before hitting a hard rate-limit wall. Defaults to 0 (disabled; rely on 429 handling instead). See @details on the credit model.}
+
 \item{mailto}{email address of user, needed to get in 'polite pool' of API}
 
-\item{concept_id}{string for openAlex concept ID}
+\item{api_key}{optional OpenAlex API key; if NULL the \code{OPENALEX_API_KEY} environment variable is used (see \code{\link{performOA}})}
 
-\item{concept_page}{string for openAlex concept page url}
+\item{topic_id}{an openAlex topic id string, e.g. "T13459" (from \code{\link{queryTopics}}); topics replace the deprecated concepts classification}
+
+\item{topic_page}{string for an openAlex topic page url (id is extracted from it)}
+
+\item{concept_id}{(deprecated) an openAlex concept id string; concepts are deprecated in favor of topics, but \code{concept.id} still works as an alias filter}
+
+\item{concept_page}{(deprecated) string for openAlex concept page url}
 
 \item{source_id}{(optional) openAlex ID# for the source associated with the work(s)}
 
@@ -63,10 +75,21 @@ extractWorks(
 \item{return_to_workspace}{boolean for whether final result should be returned as workspace object}
 }
 \description{
-Primary use is to extract works associated with a given journal (source) or concept. Because the OpenAlex API limits returns to 200, this function iterates to grab all works returned by the query. Each return is a list or 200 works, to which the processWork() function is applied to iteratively develop a flat file.
+Primary use is to extract works associated with a given journal (source) or topic. Because the OpenAlex API limits returns to 200, this function iterates to grab all works returned by the query. Each return is a list or 200 works, to which the processWork() function is applied to iteratively develop a flat file. Every page request is routed through \code{\link{performOA}}, so the crawl shares the polite-pool throttle and retries transient 429/5xx errors with backoff. Classification can be supplied either as a \code{topic_id} (openAlex's current Topics scheme, filtered on \code{topics.id}) or, for backward compatibility, a \code{concept_id} (the deprecated Concepts scheme, filtered on the \code{concept.id} alias).
 }
 \details{
 Note that because extracted records can be pretty large--and are complicated, nested json file--there is an optional "data_style" command that lets the user specify what to return. Currently there are three options: (1) bare_bones returns OpenAlex ID + DOI, basically, results that can be used to look up the work again; (2) citation returns typical citation information, like journal name, author, etc., with a couple bonus items like source.id to link back to openAlex (3) comprehensive returns author institutional affiliations, open access info, funding data, etc.; and (4) all returns the entire result in original json format.
+
+OpenAlex now meters usage with a credit/cost budget rather than a raw call
+count: list-endpoint requests (which this function makes) cost roughly 10
+credits each regardless of \code{per_page}, so \code{per_page} defaults to the
+200-work maximum to minimize the number of paged requests. On page 1 the
+function prints an estimate of the paged requests and credits a full crawl
+will cost. The live \code{X-RateLimit-*} response headers are tracked as the
+crawl runs; if the budget is exhausted (HTTP 429 after retries) or
+\code{credit_floor} is crossed, whatever has been collected so far is flushed
+to \code{dest_file} and the function stops with a message so the crawl can be
+resumed with a finer query or date range.
 }
 \examples{
 # concept usage of extractWorks()

@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{parseGrantsObject}
 \alias{parseGrantsObject}
-\title{openAlex stores information about a work's funding as a list nested in the larger works object. This function takes the works object and returns a flatted version of the location object which can be "cbinded" with the works object.}
+\title{openAlex stores information about a work's funding as a list nested in the larger works object. This function takes the works object and returns a flatted version of the funding object which can be "cbinded" with the works object.}
 \usage{
 parseGrantsObject(work = NULL)
 }
@@ -10,8 +10,17 @@ parseGrantsObject(work = NULL)
 \item{work}{an openAlex works object}
 }
 \value{
-a flattened data.table of funding info
+a flattened data.table of funding info (empty if the work has no awards)
 }
 \description{
-openAlex stores information about a work's funding as a list nested in the larger works object. This function takes the works object and returns a flatted version of the location object which can be "cbinded" with the works object.
+openAlex stores information about a work's funding as a list nested in the larger works object. This function takes the works object and returns a flatted version of the funding object which can be "cbinded" with the works object.
+}
+\details{
+OpenAlex removed the legacy \code{grants} property; funding is now
+carried in \code{awards} (award-level detail) and \code{funders}
+(funder-level detail). This function reads \code{awards} and maps it back to
+the legacy grant columns (\code{funder}, \code{funder_display_name},
+\code{award_id}) so downstream extracts keep the same shape. \code{awards}
+fields used: \code{funder_id}, \code{funder_display_name},
+\code{funder_award_id}.
 }

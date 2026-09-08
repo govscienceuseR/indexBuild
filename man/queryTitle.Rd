@@ -11,7 +11,8 @@ queryTitle(
   max_results = 5,
   url = "https://api.openalex.org/works",
   data_style = c("citation"),
-  try_reduced_string = TRUE
+  try_reduced_string = TRUE,
+  api_key = NULL
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ queryTitle(
 \item{data_style}{options for processWork() --> how much/how little data to grab from json list, see @details}
 
 \item{try_reduced_string}{option to try removing words FAILED by hunspell package if nothing found in main query}
+
+\item{api_key}{optional OpenAlex API key; if NULL the \code{OPENALEX_API_KEY} environment variable is used (see \code{\link{performOA}})}
 }
 \description{
 Primary use of this function is to make a query object for use in openAlex that returns potential matches to a title string

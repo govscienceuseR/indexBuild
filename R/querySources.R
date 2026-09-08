@@ -3,13 +3,14 @@
 #' @param source a string source name https://docs.openalex.org/api
 #' @param mailto email address of user, needed to get in 'polite pool' of API
 #' @param type which type of source should be included in query, defaults to all
+#' @param api_key optional OpenAlex API key; if NULL the \code{OPENALEX_API_KEY} environment variable is used (see \code{\link{performOA}})
 #' @description Primary use of this function is to get source ID for use in API
 #' @export
 #' @import jsonlite
 #' @import stringr
 #' @import httr
 
-querySources <- function(source = NULL,mailto = NULL,type = NULL){
+querySources <- function(source = NULL,mailto = NULL,type = NULL,api_key = NULL){
   # type options are c('journal','repository','conference','ebook platform')
   source_base <- 'https://api.openalex.org/sources'
   url <- parse_url(source_base)
@@ -20,5 +21,5 @@ querySources <- function(source = NULL,mailto = NULL,type = NULL){
   #if(length(url$query$filter)>1){url$query$filter<-paste(url$query$filter,collapse = '&')}
   qurl <- build_url(url)
   qurl <- str_replace_all(qurl,'filter[1-2]','filter')
-  return(readOA(qurl))
+  return(readOA(qurl, api_key = api_key))
 }

@@ -9,7 +9,8 @@ performOA(
   wait_time = 5,
   max_tries = 5,
   rate_capacity = 8,
-  fill_time_s = 1
+  fill_time_s = 1,
+  api_key = NULL
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ performOA(
 \item{rate_capacity}{token-bucket size (max burst) for the throttle}
 
 \item{fill_time_s}{seconds to refill the full bucket (rate = capacity / fill_time_s)}
+
+\item{api_key}{optional OpenAlex API key string; when NULL, falls back to the \code{OPENALEX_API_KEY} environment variable}
 }
 \value{
 an httr2 response object. Non-2xx responses are returned (not thrown)
@@ -39,4 +42,13 @@ here is what keeps bursty split/apply query loops from tripping 429 errors.
 Because the throttle realm is keyed on the OpenAlex host, the rate limit is
 shared across all callers in the same R process (titles, sources, concepts,
 host-org lookups), so parallel or interleaved queries still stay under cap.
+
+An OpenAlex API key can be supplied two ways: pass it explicitly via the
+\code{api_key} argument, or set the \code{OPENALEX_API_KEY} environment
+variable (the default fallback). Either way the key is sent as an
+\code{Authorization: Bearer} header (not a query param), so it never appears
+in the request URL that callers store alongside results. This raises the
+account's free daily allowance and enables paid usage tracking. OpenAlex has
+announced a transition to API keys; the \code{mailto} polite pool still works
+today, so a key is optional.
 }
